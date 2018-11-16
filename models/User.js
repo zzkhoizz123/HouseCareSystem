@@ -47,3 +47,29 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
     	callback(null, isMatch);
 	});
 }
+
+module.exports.findByRegExUsername = (name) => {
+	return new Promise((resolve, reject) => {
+		User.findOne({ username: new RegExp("^" + name + "\\b", 'i') }, (err, user)=> {
+			if (err)
+				return reject(err);
+			if (user)
+				return reject();
+			else
+				return resolve(user);
+		});
+	});
+}
+
+module.exports.findByRegExEmail = (email) => {
+	return new Promise((resolve, reject) => {
+		User.findOne({ email: new RegExp("^" + email + "\\b", 'i') },(err, user)=> {
+			if (err)
+				return reject(err);
+			if (user)
+				return reject();
+			else
+				return resolve(user);
+		});
+	});
+}

@@ -23,9 +23,30 @@ router.post('/signup', function (req, res) {
 		username,
 		password
 	);
-	/// .then
-	/// promise
 
+	User.findByRegExUsername(username)
+		.then((user)=>{
+			return User.findByRegExEmail(email);
+		})
+		.then((user) => {
+			var newUser = new User({
+				name: name,
+				email: email,
+				username: username,
+				password: password
+			});
+			User.createUser(newUser, function (err, user) {
+				if (err) { return res.json({success : false}); }
+				console.log(user);
+			});
+			 //req.flash('success_msg', 'You are registered and can now login');
+			return res.json({success: true});
+		})
+		.catch(()=>{
+			return res.json({message: 'Username or email existed'})
+		});
+
+/*
 	User.findOne({ username: {
 			"$regex": "^" + username + "\\b", "$options": "i"
 	}}, function (err, user) {
@@ -58,6 +79,7 @@ router.post('/signup', function (req, res) {
 			});
 		});
 	//}
+	*/
 });
 
 
