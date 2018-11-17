@@ -1,3 +1,3 @@
 module.exports = {
-    mongoURI: 'mongodb://localhost:27017/house-care'
+    mongoURI: 'mongodb://http://206.189.148.40:27017/'
 }
