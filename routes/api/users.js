@@ -3,6 +3,11 @@ const router = express.Router();
 
 const User = require('../../models/User');
 
+
+router.get('/', function(req, res){
+	console.log('home route');
+});
+
 /**
  * POST: /signup
  * 	@param name: User Register Name
