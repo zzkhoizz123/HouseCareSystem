@@ -6,6 +6,7 @@ import cors = require('cors');
 import {factory} from './config/LoggerConfig';
 
 import {router as user_route} from './api/v1/users';
+import {router as helper_route} from './api/v1/helpers';
 import {development as db_dev, production as db_prod} from './config/keys';
 
 const app = express();
@@ -30,5 +31,6 @@ mongoose
     });
 
 app.use('/api/users', user_route);
+app.use('/api/helpers', helper_route);
 
 app.listen(port, () => routeLog.info(`Server started on port ${port}`));

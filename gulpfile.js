@@ -11,7 +11,7 @@ gulp.task('build', function() {
 
 gulp.task('start', () => {
     nodemon({script: 'built/server.js', watch: ['built/**/*.js'], ext: 'js'})
-        .on('restart', () => { gulp.src('server.js').pipe(notify('AAAAAA')); });
+        .on('restart', () => { gulp.src('built/server.js'); });
 });
 
 gulp.task('test', () => {

@@ -13,6 +13,11 @@
   "author": "Khoi IBL Block chain Lab",
   "license": "ISC",
   "dependencies": {
+    "@types/bluebird": "^3.5.24",
+    "@types/cors": "^2.8.4",
+    "@types/mongodb": "^3.1.15",
+    "@types/mongoose": "^5.3.4",
+    "@types/node": "^10.12.12",
     "bcrypt": "^3.0.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
@@ -20,14 +25,10 @@
     "concurrently": "^4.1.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "gulp-notify": "^3.2.0",
     "mongodb": "^3.1.10",
     "mongoose": "^5.3.15",
-    "typescript-logging": "^0.6.3",
-    "@types/node": "^10.12.12",
-    "@types/bluebird": "^3.5.24",
-    "@types/cors": "^2.8.4",
-    "@types/mongodb": "^3.1.15",
-    "@types/mongoose": "^5.3.4"
+    "typescript-logging": "^0.6.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",
