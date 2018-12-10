@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
+import {Schema, model} from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as Promise from 'bluebird';
-// User Schema
-var Schema = mongoose.Schema;
+
 
 const UserSchema = new Schema({
     username: {type: String, index: true, unique: true},
@@ -11,7 +10,7 @@ const UserSchema = new Schema({
     name: {type: String}
 });
 
-var User = mongoose.model('User', UserSchema);
+var User = model('User', UserSchema);
 
 let createUser = function(newUser, callback) {
     bcrypt.genSalt(10, function(err, salt) {
