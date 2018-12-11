@@ -3,11 +3,11 @@ import express = require('express');
 import mongoose = require('mongoose');
 import bodyParser = require('body-parser');
 import cors = require('cors');
-import {factory} from './config/LoggerConfig';
+import {factory} from 'config/LoggerConfig';
 
-import {router as user_route} from './api/v1/users';
-import {router as helper_route} from './api/v1/helpers';
-import {development as db_dev, production as db_prod} from './config/keys';
+import {router as user_route} from 'api/v1/users';
+import {router as helper_route} from 'api/v1/helpers';
+import {development as db_dev, production as db_prod} from 'config/keys';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,7 +30,16 @@ mongoose
         process.exit(1);
     });
 
-app.use('/api/users', user_route);
-app.use('/api/helpers', helper_route);
+app.use('/**', (req, res, next) => {
+    routeLog.info('[' + req.method + '] ' + req.originalUrl);
+    routeLog.info(JSON.stringify(req.body));
+    // console.log(req.body);
+    next();
+});
+app.use('/api/v1/users', user_route);
+app.use('/api/v1/helpers', helper_route);
 
-app.listen(port, () => routeLog.info(`Server started on port ${port}`));
+let server =
+    app.listen(port, () => routeLog.info(`Server started on port ${port}`));
+
+export {server}

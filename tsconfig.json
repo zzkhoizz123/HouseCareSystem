@@ -3,9 +3,14 @@
     "outDir": "./built",
     "allowJs": true,
     "target": "es5",
-    "lib": ["es6", "dom"]
+    "lib": ["es6", "dom"],
+    "baseUrl": "src",
+    "paths": {
+    }
   },
   "include": [
-    "./src/**/*"
-  ]
+    "./src/**/*.ts",
+    "./test/**/*.spec.ts"
+  ],
+  "rootDirs": ["src", "test"]
 }
