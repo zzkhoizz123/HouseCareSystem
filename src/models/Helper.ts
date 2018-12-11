@@ -4,10 +4,10 @@ import * as Promise from 'bluebird';
 //const toJsonSchema = require('to-json-schema');
 
 import {factory} from '../config/LoggerConfig';
+import { ObjectId } from 'bson';
 
 const dbLog = factory.getLogger("database.Mongo");
 const routeLog = factory.getLogger("request.Route");
-
 const WorkSchema = new Schema({
 	type: {
 		type: String,
@@ -132,6 +132,22 @@ let GetWorkByHelperName = (helpername) => {
 	});
 }
 
+let GetHelperByID = (id) => {
+	return new Promise((resolve, reject) => {
+		Helper.findOne({ _id : new ObjectId(id) }, (err, helper)=> {
+			if (err)
+				return reject(err);
+			if (helper){
+                console.log(helper)
+                //console.log(helper.workingList)
+                return resolve(helper);
+            }
+			else
+				return reject();
+		});
+	});
+}
+
 
 var HashPassword = (password)=>{
     return bcrypt.hashSync(password)
@@ -179,5 +195,6 @@ export {
    findByRegExEmail,
    findByRegExUsername,
    Helper,
-   createUser
+   createUser,
+   GetHelperByID
 }
