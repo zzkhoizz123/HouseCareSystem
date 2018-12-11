@@ -16,19 +16,21 @@ describe('Create Helper', () => {
         // Before each test we empty the database in your case
         server = require('server').server;
         Helper.deleteMany({}, (err) => { done(); });
+        Helper.insertMany([{name: "A", username: "A", password: "1", email: "A@gmail.com"}] );
     });
     afterEach((done) => {
         setTimeout(function() { server.close(); }, 3000);
         done();
     });
 
+
     describe('/POST /helpers/signup', () => {
         it('Create a new helper', (done) => {
             let helper = {
-                name: 'Nguyen Van A',
-                email: 'nguyenvana@gmail.com',
-                username: 'nguyenvana',
-                password: 'nguyenvana'
+                name: 'khoi2',
+                email: 'khoi2@gmail.com',
+                username: 'khoi2',
+                password: '3'
             };
             chai.request(server)
                 .post('/api/v1/helpers/signup')

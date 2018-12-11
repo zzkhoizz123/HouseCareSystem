@@ -14,6 +14,7 @@ router.post('/signup', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
 
+
     HelperModel.findByRegExUsername(username)
         .then((helper) => { return HelperModel.findByRegExEmail(email); })
         .then((helper) => {
@@ -29,17 +30,25 @@ router.post('/signup', function(req, res) {
                         {message: err, success: false, error: 1, data: {}});
                 }
             });
-            res.status(200);
             return res.json({message: "", success: true, error: 0, data: {}});
         })
-        .catch(() => {
+        .catch((err) => {
             return res.json({
-                message: 'UserModelname or email existed',
+                message: err,
                 success: false,
                 error: 1,
                 data: {}
             });
-        });
+        })
+        .catch(() => {
+            return res.json({
+                message: 'UserModel name or email existed',
+                success: false,
+                error: 1,
+                data: {}
+            });
+        })
+        
 });
 
 router.get('/worklist/:name', function(req, res) {
@@ -47,9 +56,25 @@ router.get('/worklist/:name', function(req, res) {
     var helpername = req.params.name;
 
     HelperModel.GetWorkByHelperName(helpername)
-        .then((workingList) => { return res.json({data: workingList}); })
-        .catch((error) => {return res.json({error: error})})
-        .catch(() => {return res.json({error: 'Error'})});
+        .then((workingList) => { return res.json({
+            message: '',
+            success: true,
+            error: 0,
+            data: {workingList}
+            }); 
+        })
+        .catch((error) => {return res.json({
+            message: error,
+            success: false,
+            error: 1,
+            data: {}
+        })})
+        .catch(() => {return res.json({
+            message: 'Error',
+            success: false,
+            error: 1,
+            data: {}
+        })});
 });
 
 router.get('/:id', function(req, res) {

@@ -1,5 +1,5 @@
 import {Schema, model} from 'mongoose';
-import bcrypt = require('bcryptjs');
+import * as bcrypt from 'bcryptjs';
 import {ObjectId} from 'bson';
 import * as Promise from 'bluebird';
 
@@ -67,12 +67,16 @@ var salt = "khoitran";
 let findByRegExUsername = (name) => {
    return new Promise((resolve, reject) => {
       Helper.findOne(
-          {username: new RegExp('^' + name + '\\b', 'i')}, (err, user) => {
+          {username: name }, (err, user) => {
              if (err) return reject(err);
-             if (user)
-                return reject();
-             else
-                return resolve(user);
+             if (user){
+               console.log("hi3")
+               return reject();
+             }
+             else{
+               console.log("hi4")
+               return resolve(user);
+             }
           });
    });
 };
@@ -80,12 +84,16 @@ let findByRegExUsername = (name) => {
 let findByRegExEmail = (email) => {
    return new Promise((resolve, reject) => {
       Helper.findOne(
-          {email: new RegExp('^' + email + '\\b', 'i')}, (err, user) => {
+          {email:  email }, (err, user) => {
              if (err) return reject(err);
-             if (user)
-                return reject();
-             else
+             if (user){
+               console.log("hi")
+               return reject();
+             }
+             else{
+               console.log("hi2")
                 return resolve(user);
+             }
           });
    });
 };
@@ -152,6 +160,7 @@ let ResetPassword =
 
 let createUser = function(newUser, callback) {
    newUser.password = bcrypt.hashSync(newUser.password);
+   console.log(newUser.password)
    newUser.save(callback);
 };
 
