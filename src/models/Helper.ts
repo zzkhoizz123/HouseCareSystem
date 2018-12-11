@@ -1,7 +1,7 @@
 import {Schema, model} from 'mongoose';
 import bcrypt = require('bcryptjs');
+import {ObjectId} from 'bson';
 import * as Promise from 'bluebird';
-// const toJsonSchema = require('to-json-schema');
 
 import {factory} from 'config/LoggerConfig';
 
@@ -99,12 +99,26 @@ let GetWorkByHelperName =
               (err, helper) => {
                  if (err) return reject(err);
                  if (helper) {
-                    console.log(helper)
-                        // console.log(helper.workingList)
-                        return resolve(helper['workingList']);
+                    // console.log(helper.workingList)
+                    return resolve(helper['workingList']);
                  } else
                     return reject();
               });
+       });
+    }
+
+let GetHelperByID =
+    (id) => {
+       return new Promise((resolve, reject) => {
+          Helper.findOne({_id: new ObjectId(id)}, (err, helper) => {
+             if (err) return reject(err);
+             if (helper) {
+                console.log(helper)
+                    // console.log(helper.workingList)
+                    return resolve(helper);
+             } else
+                return reject();
+          });
        });
     }
 
@@ -147,5 +161,6 @@ export {
    findByRegExEmail,
    findByRegExUsername,
    Helper,
-   createUser
+   createUser,
+   GetHelperByID
 }

@@ -18,10 +18,6 @@ router.post('/signup', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
 
-    console.log(
-        '{name: %s, email: %s, username: %s, password: %s}', name, email,
-        username, password);
-
     UserModel.findByRegExUsername(username)
         .then((user) => { return UserModel.findByRegExEmail(email); })
         .then((user) => {
@@ -35,10 +31,7 @@ router.post('/signup', function(req, res) {
                 if (err) {
                     return res.json({success: false});
                 }
-                console.log(user);
             });
-            // req.flash('success_msg', 'You are registered and can now
-            // login');
             return res.json({success: true});
         })
         .catch(() => {

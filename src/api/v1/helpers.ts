@@ -25,16 +25,20 @@ router.post('/signup', function(req, res) {
             });
             HelperModel.createUser(newHelperModel, function(err, helper) {
                 if (err) {
-                    return res.json({success: false});
+                    return res.json(
+                        {message: err, success: false, error: 1, data: {}});
                 }
             });
-            // req.flash('success_msg', 'You are registered and can now
-            // login');
             res.status(200);
-            return res.json({success: true});
+            return res.json({message: "", success: true, error: 0, data: {}});
         })
         .catch(() => {
-            return res.json({message: 'UserModelname or email existed'});
+            return res.json({
+                message: 'UserModelname or email existed',
+                success: false,
+                error: 1,
+                data: {}
+            });
         });
 });
 
@@ -48,6 +52,22 @@ router.get('/worklist/:name', function(req, res) {
         .catch(() => {return res.json({error: 'Error'})});
 });
 
+router.get('/:id', function(req, res) {
+    var id = req.params.id;
+
+    HelperModel.GetHelperByID(id)
+        .then((helper) => {
+            res.status(200);
+            return res.json(
+                {message: "", success: true, error: 0, data: {helper}});
+        })
+        .catch(
+            (error) => {return res.json(
+                {message: error, success: false, error: 1, data: {}})})
+        .catch(
+            () => {return res.json(
+                {message: 'Error', success: false, error: 1, data: {}})});
+});
 
 router.post('/reset_password', (req, res) => {
     let name = req.body.username;
@@ -55,14 +75,24 @@ router.post('/reset_password', (req, res) => {
     let new_pass = req.body.new_password;
 
     if (!name || !pass || !new_pass) {
-        res.json({err: 'no username or password'});
+        res.json({
+            message: 'no username or password',
+            success: false,
+            error: 1,
+            data: {}
+        });
         res.end();
         return;
     }
 
     HelperModel.ResetPassword(name, pass, new_pass)
-        .then((result) => {return res.json()})
-        .catch((err) => {return res.json()})
+        .then((result) => {
+            res.status(200);
+            return res.json({message: '', success: true, error: 0, data: {}});
+        })
+        .catch((err) => {
+            return res.json({message: err, success: false, error: 1, data: {}});
+        });
 });
 
 export {router};
