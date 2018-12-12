@@ -2,8 +2,12 @@
   "compilerOptions": {
     "outDir": "./built",
     "allowJs": true,
-    "target": "es5",
+    "target": "es6",
+    "module": "none",
     "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "baseUrl": "src",
     "paths": {
     }
