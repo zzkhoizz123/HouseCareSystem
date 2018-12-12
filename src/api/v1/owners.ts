@@ -1,6 +1,5 @@
 import express = require('express');
-
-import * as HelperModel from 'models/Helper';
+import * as OwnerModel from 'models/Owner';
 import {factory} from 'config/LoggerConfig';
 
 const router = express.Router();
@@ -21,9 +20,9 @@ router.post('/signin', function(req, res) {
         return;
     }
 
-    HelperModel.GetHelperByUsername(username)
-        .then((helper) => { 
-            var check = HelperModel.ComparePassword(password, helper['password'])
+    OwnerModel.GetOwnerByUsername(username)
+        .then((owner) => { 
+            var check = OwnerModel.ComparePassword(password, owner['password'])
 
             if (check == true){
                 return res.json({
@@ -60,7 +59,6 @@ router.post('/signin', function(req, res) {
         })
 });
 
-
 router.post('/signup', function(req, res) {
     var name = req.body.name;
     var email = req.body.email;
@@ -77,16 +75,16 @@ router.post('/signup', function(req, res) {
         return;
     }
 
-    HelperModel.findByRegExUsername(username)
-        .then((helper) => { return HelperModel.findByRegExEmail(email); })
-        .then((helper) => {
-            var newHelperModel = new HelperModel.Helper({
+    OwnerModel.FindByRegExUsername(username)
+        .then((owner) => { return OwnerModel.FindByRegExEmail(email); })
+        .then((owner) => {
+            var newOwnerModel = new OwnerModel.Owner({
                 name: name,
                 email: email,
                 username: username,
                 password: password
             });
-            HelperModel.createUser(newHelperModel, function(err, helper) {
+            OwnerModel.createOwner(newOwnerModel, function(err, owner) {
                 if (err) {
                     return res.json(
                         {message: err, success: false, error: 1, data: {}});
@@ -109,50 +107,9 @@ router.post('/signup', function(req, res) {
                 error: 1,
                 data: {}
             });
-        })      
+        })    
 });
 
-router.get('/jobs/:id', function(req, res) {
-    var helpername = req.params.id;
-
-    HelperModel.GetWorkByHelperName(helpername)
-        .then((workingList) => { return res.json({
-            message: '',
-            success: true,
-            error: 0,
-            data: {workingList}
-            }); 
-        })
-        .catch((error) => {return res.json({
-            message: error,
-            success: false,
-            error: 1,
-            data: {}
-        })})
-        .catch(() => {return res.json({
-            message: 'Error',
-            success: false,
-            error: 1,
-            data: {}
-        })});
-});
-
-router.get('/:id', function(req, res) {
-    var id = req.params.id;
-
-    HelperModel.GetHelperByID(id)
-        .then((helper) => {
-            res.status(200);
-            return res.json(
-                {message: "", success: true, error: 0, data: {helper}});
-        })
-        .catch(
-            (error) => {return res.json(
-                {message: error, success: false, error: 1, data: {}})})
-        .catch(
-            () => {return res.json(
-                {message: 'Error', success: false, error: 1, data: {}})});
-});
 
 router.post('/reset_password', (req, res) => {
     let name = req.body.username;
@@ -170,7 +127,7 @@ router.post('/reset_password', (req, res) => {
         return;
     }
 
-    HelperModel.ResetPassword(name, pass, new_pass)
+    OwnerModel.ResetPassword(name, pass, new_pass)
         .then((result) => {
             res.status(200);
             return res.json({message: '', success: true, error: 0, data: {}});
@@ -178,6 +135,33 @@ router.post('/reset_password', (req, res) => {
         .catch((err) => {
             return res.json({message: err, success: false, error: 1, data: {}});
         });
+});
+
+router.post('/work/:id', (req, res) => {
+    let id = req.params.id
+    let typeList = req.body.type;
+    let time = req.body.time;
+    let location = req.body.location;
+    let salary = req.body.salary;
+
+    if (!id || !typeList || !time || !salary || !location) {
+        res.json({
+            message: 'Wrong input',
+            success: false,
+            error: 1,
+            data: {}
+        });
+        res.end();
+        return;
+    }  
+
+    OwnerModel.ChangeWork(id, typeList, time, location, salary)
+        .then((result) =>{
+            return res.json({message: "", success: true, error: 0, data: {}})
+        })
+        .catch((err)=>{
+            return res.json({message: err, success: false, error: 1, data: {}})
+        })
 });
 
 export {router};

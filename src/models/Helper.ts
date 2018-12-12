@@ -9,9 +9,9 @@ const dbLog = factory.getLogger("database.Mongo");
 const routeLog = factory.getLogger("request.Route");
 
 const WorkSchema = new Schema({
-   type: {
+   type: [{
       type: String,
-   },
+   }],
    description: {type: String},
    location: {
       type: String,
@@ -24,9 +24,9 @@ const WorkSchema = new Schema({
 });
 
 const CharacterSchema = new Schema({
-   type: {
+   type: [{
       type: String,
-   },
+   }],
    description: {type: String}
 });
 
@@ -51,7 +51,7 @@ const HelperSchema = new Schema({
    password: {type: String},
    email: {
       type: String,
-      // unique : true
+      unique : true
    },
    name: {type: String},
    sex: {type: String},
@@ -70,11 +70,9 @@ let findByRegExUsername = (name) => {
           {username: name }, (err, user) => {
              if (err) return reject(err);
              if (user){
-               console.log("hi3")
                return reject();
              }
              else{
-               console.log("hi4")
                return resolve(user);
              }
           });
@@ -87,11 +85,9 @@ let findByRegExEmail = (email) => {
           {email:  email }, (err, user) => {
              if (err) return reject(err);
              if (user){
-               console.log("hi")
                return reject();
              }
              else{
-               console.log("hi2")
                 return resolve(user);
              }
           });
@@ -121,11 +117,22 @@ let GetHelperByID =
           Helper.findOne({_id: new ObjectId(id)}, (err, helper) => {
              if (err) return reject(err);
              if (helper) {
-                console.log(helper)
                     // console.log(helper.workingList)
                     return resolve(helper);
              } else
                 return reject();
+          });
+       });
+    }
+
+    let GetHelperByUsername = (name) => {
+       return new Promise((resolve, reject) => {
+          Helper.findOne({username: name}, (err, helper) => {
+             if (err) return reject(err);
+             if (helper) {
+               return resolve(helper);
+             } else
+               return reject();
           });
        });
     }
@@ -135,6 +142,11 @@ var HashPassword =
     (password) => {
        return bcrypt.hashSync(password)
     }
+
+var ComparePassword = (pass, hashpass)=>{
+   let rightPassword: boolean = bcrypt.compareSync(pass, hashpass);
+   return rightPassword;
+}
 
 let ResetPassword =
     (name, curpwd, newpwd) => {
@@ -160,7 +172,6 @@ let ResetPassword =
 
 let createUser = function(newUser, callback) {
    newUser.password = bcrypt.hashSync(newUser.password);
-   console.log(newUser.password)
    newUser.save(callback);
 };
 
@@ -171,5 +182,7 @@ export {
    findByRegExUsername,
    Helper,
    createUser,
-   GetHelperByID
+   GetHelperByID,
+   GetHelperByUsername,
+   ComparePassword
 }

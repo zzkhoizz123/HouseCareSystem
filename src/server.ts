@@ -7,6 +7,7 @@ import {factory} from 'config/LoggerConfig';
 
 import {router as user_route} from 'api/v1/users';
 import {router as helper_route} from 'api/v1/helpers';
+import {router as owner_route} from 'api/v1/owners';
 import {development as db_dev, production as db_prod} from 'config/keys';
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/**', (req, res, next) => {
 });
 app.use('/api/v1/users', user_route);
 app.use('/api/v1/helpers', helper_route);
+app.use('/api/v1/owners', owner_route);
 
 let server =
     app.listen(port, () => routeLog.info(`Server started on port ${port}`));
