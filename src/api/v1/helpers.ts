@@ -24,7 +24,6 @@ router.post('/signin', function(req, res) {
     HelperModel.GetHelperByUsername(username)
         .then((helper) => { 
             var check = HelperModel.ComparePassword(password, helper['password'])
-
             if (check == true){
                 return res.json({
                     message: "",
@@ -113,9 +112,9 @@ router.post('/signup', function(req, res) {
 });
 
 router.get('/jobs/:id', function(req, res) {
-    var helpername = req.params.id;
+    var id = req.params.id;
 
-    HelperModel.GetWorkByHelperName(helpername)
+    HelperModel.GetJobByHelperID(id)
         .then((workingList) => { return res.json({
             message: '',
             success: true,
@@ -178,6 +177,33 @@ router.post('/reset_password', (req, res) => {
         .catch((err) => {
             return res.json({message: err, success: false, error: 1, data: {}});
         });
+});
+
+router.post('/addjob/:id', (req, res) => {
+    let id = req.params.id
+    let typeList = req.body.type;
+    let time = req.body.time;
+    let location = req.body.location;
+    let salary = req.body.salary;
+
+    if (!id || !typeList || !time || !salary || !location) {
+        res.json({
+            message: 'Wrong input',
+            success: false,
+            error: 1,
+            data: {}
+        });
+        res.end();
+        return;
+    }  
+
+    HelperModel.AddJob(id, typeList, time, location, salary)
+        .then((result) =>{
+            return res.json({message: "", success: true, error: 0, data: {}})
+        })
+        .catch((err)=>{
+            return res.json({message: err, success: false, error: 1, data: {}})
+        })
 });
 
 export {router};

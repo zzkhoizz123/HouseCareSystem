@@ -137,7 +137,7 @@ router.post('/reset_password', (req, res) => {
         });
 });
 
-router.post('/work/:id', (req, res) => {
+router.post('/changejob/:id', (req, res) => {
     let id = req.params.id
     let typeList = req.body.type;
     let time = req.body.time;
@@ -155,13 +155,31 @@ router.post('/work/:id', (req, res) => {
         return;
     }  
 
-    OwnerModel.ChangeWork(id, typeList, time, location, salary)
+    OwnerModel.ChangeJob(id, typeList, time, location, salary)
         .then((result) =>{
             return res.json({message: "", success: true, error: 0, data: {}})
         })
         .catch((err)=>{
             return res.json({message: err, success: false, error: 1, data: {}})
         })
+});
+
+
+router.get('/:id', function(req, res) {
+    var id = req.params.id;
+
+    OwnerModel.GetOwnerByID(id)
+        .then((owner) => {
+            res.status(200);
+            return res.json(
+                {message: "", success: true, error: 0, data: {owner}});
+        })
+        .catch(
+            (error) => {return res.json(
+                {message: error, success: false, error: 1, data: {}})})
+        .catch(
+            () => {return res.json(
+                {message: 'Error', success: false, error: 1, data: {}})});
 });
 
 export {router};

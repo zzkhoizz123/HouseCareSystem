@@ -8,7 +8,7 @@ import {factory} from 'config/LoggerConfig';
 const dbLog = factory.getLogger("database.Mongo");
 const routeLog = factory.getLogger("request.Route");
 
-const WorkSchema = new Schema({
+const JobSchema = new Schema({
     type: [{
         type: String,
     }],
@@ -37,18 +37,18 @@ const OwnerSchema = new Schema({
     name: {type: String},
     sex: {type: String},
     character: CharacterSchema,
-    work: WorkSchema
+    job: JobSchema
 });
 
 var Owner = model('Owner', OwnerSchema);
 
 var salt = "khoitran";
 
-let ChangeWork = (id, typeList, time, salary, location )=>{
+let ChangeJob = (id, typeList, time, salary, location )=>{
     return new Promise((resolve, reject)=>{
         Owner.updateOne(
                 {_id: new ObjectId(id)}, 
-                {$set: {work: {type: typeList, location: location, time: time, expectedSalary: salary}}},
+                {$set: {job: {type: typeList, location: location, time: time, expectedSalary: salary}}},
                 (err, result)=>{
                     if(err) return reject(err);
                     return resolve(result);
@@ -62,8 +62,7 @@ let GetOwnerByID =
           Owner.findOne({_id: new ObjectId(id)}, (err, owner) => {
              if (err) return reject(err);
              if (owner) {
-                    // console.log(helper.workingList)
-                    return resolve(owner);
+                return resolve(owner);
              } else
                 return reject();
           });
@@ -123,22 +122,6 @@ let GetOwnerByUsername = (name) => {
     newUser.save(callback);
  };
 
-let GetWorkByOwnerName =
-    (name) => {
-       return new Promise((resolve, reject) => {
-          Owner.findOne(
-              {username: name },
-              (err, owner) => {
-                 if (err) return reject(err);
-                 if (owner) {
-                    // console.log(helper.workingList)
-                    return resolve(owner['workedList']);
-                 } else
-                    return reject();
-              });
-       });
-    }
-
     var HashPassword =
     (password) => {
        return bcrypt.hashSync(password)
@@ -175,5 +158,5 @@ export {
     createOwner,
     ResetPassword,
     GetOwnerByID,
-    ChangeWork
+    ChangeJob
  }

@@ -8,7 +8,7 @@ import {factory} from 'config/LoggerConfig';
 const dbLog = factory.getLogger("database.Mongo");
 const routeLog = factory.getLogger("request.Route");
 
-const WorkSchema = new Schema({
+const JobSchema = new Schema({
    type: [{
       type: String,
    }],
@@ -30,14 +30,6 @@ const CharacterSchema = new Schema({
    description: {type: String}
 });
 
-const PropertySchema = new Schema({
-   location: {
-      type: String,
-   },
-   character: CharacterSchema,
-   work: WorkSchema
-});
-
 const ProfileSchema = new Schema({
    picture: {type: String},
    experience: {type: String},
@@ -55,14 +47,28 @@ const HelperSchema = new Schema({
    },
    name: {type: String},
    sex: {type: String},
-   property: PropertySchema,
+   character: CharacterSchema,
+   job: JobSchema,
    profile: ProfileSchema,
-   workingList: [WorkSchema]
+   jobList: [JobSchema]
 });
 
 var Helper = model('Helper', HelperSchema);
 
 var salt = "khoitran";
+
+let AddJob = (id, typeList, time, salary, location )=>{
+   return new Promise((resolve, reject)=>{
+       Helper.updateOne(
+               {_id: new ObjectId(id)}, 
+               {$set: {job: {type: typeList, location: location, time: time, expectedSalary: salary}}},
+               (err, result)=>{
+                   if(err) return reject(err);
+                   return resolve(result);
+               });     
+   });
+}
+
 
 let findByRegExUsername = (name) => {
    return new Promise((resolve, reject) => {
@@ -95,16 +101,16 @@ let findByRegExEmail = (email) => {
 };
 
 
-let GetWorkByHelperName =
-    (helpername) => {
+let GetJobByHelperID =
+    (id) => {
        return new Promise((resolve, reject) => {
           Helper.findOne(
-              {username: new RegExp("^" + helpername + "\\b", 'i')},
+              {_id: new ObjectId(id)},
               (err, helper) => {
                  if (err) return reject(err);
                  if (helper) {
                     // console.log(helper.workingList)
-                    return resolve(helper['workingList']);
+                    return resolve(helper['jobList']);
                  } else
                     return reject();
               });
@@ -176,7 +182,7 @@ let createUser = function(newUser, callback) {
 };
 
 export {
-   GetWorkByHelperName,
+   GetJobByHelperID,
    ResetPassword,
    findByRegExEmail,
    findByRegExUsername,
@@ -184,5 +190,6 @@ export {
    createUser,
    GetHelperByID,
    GetHelperByUsername,
-   ComparePassword
+   ComparePassword,
+   AddJob
 }
