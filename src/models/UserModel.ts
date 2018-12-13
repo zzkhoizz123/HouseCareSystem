@@ -39,15 +39,13 @@ const CreateNewUser = (username, password, name, email, role) => {
 const VerifyUser = (username, password) => {
   return new Promise((resolve, reject) => {
     UserModel.findOne(
-      {
-        $and: [{ username }]
-      },
+      { username },
       (err, user) => {
         if (user) {
           if (bcrypt.compareSync(password, user.password)) {
             resolve({
               role: user.role,
-              id: user.id,
+              id: user._id,
               name: user.name,
               username: user.username,
               email: user.email

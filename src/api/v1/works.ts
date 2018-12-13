@@ -37,32 +37,54 @@ router.post("/", (req, res) => {
         });
 });
 
-router.put("/", (req, res) => {
+router.put("/:workId", (req, res) => {
     // helper: update helper in work
     // owner: update work info
-});
-
-router.get("/", (req, res) => {
+    const workId = req.params.workId;
     const userId = req.user.id;
-    WorkModel.GetWorkingListOfUser(userId)
-        .then(data => {
-            res.status(200);
+
+    WorkModel.ChooseWork(userId, workId)
+        .then(work => {
             return res.json({
-                message: "Get Work success",
+                message: "Successfully choose work",
                 success: true,
                 error: 0,
-                data
+                data: {
+                    work
+                }
             });
         })
         .catch(msg => {
-            res.status(200);
             return res.json({
                 message: msg,
                 success: false,
                 error: 0,
                 data: {}
             });
-        });
+        })
 });
+
+// router.get("/", (req, res) => {
+//     const userId = req.user.id;
+//     WorkModel.(userId)
+//         .then(data => {
+//             res.status(200);
+//             return res.json({
+//                 message: "Get Work success",
+//                 success: true,
+//                 error: 0,
+//                 data
+//             });
+//         })
+//         .catch(msg => {
+//             res.status(200);
+//             return res.json({
+//                 message: msg,
+//                 success: false,
+//                 error: 0,
+//                 data: {}
+//             });
+//         });
+// });
 
 export { router };

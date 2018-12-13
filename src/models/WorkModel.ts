@@ -16,41 +16,79 @@ const WorkModel = Model.WorkModel;
 const CreateWork = (userId, typeList, newtime, newsalary, newlocation, newdescription) => {
     return new Promise((resolve, reject) => {
         UserModel.findOne({
-            $or: [{ id: userId }, { role: 1 }]
+            $and: [{ _id: userId }, { role: 1 }]
         }, (err, user) => {
             if (err) {
                 return reject("Error occur");
             }
-            if (user) {
-                const work = new WorkModel({
-                    type: typeList,
-                    description: newdescription,
-                    status: 0,
-                    location: newlocation,
-                    time: newtime,
-                    expectedSalary: newsalary,
-                    owner: user._id
-                });
-                WorkModel.create(work)
-                    .then((newwork) => {
-                        UserModel.update(
-                            { _id: user._id },
-                            { $push: { workingList: newwork._id } }
-                        );
-                        WorkModel.findById(newwork._id)
-                            .populate({ path: "owner", select: "-password -__v", model: "User" })
-                            .exec((err1, res) => {
-                                if (err1) {
-                                    return reject(err1);
-                                }
-                                return resolve(res);
-                            })
-                    });
+            if (!user) {
+                return reject("No user found");
             }
+            const work = new WorkModel({
+                type: typeList,
+                description: newdescription,
+                status: 0,
+                location: newlocation,
+                time: newtime,
+                expectedSalary: newsalary,
+                owner: user._id,
+                helper: null
+            });
+            WorkModel.create(work)
+                .then((newwork) => {
+                    UserModel.update(
+                        { _id: user._id },
+                        { $push: { workingList: newwork._id } }
+                    );
+                    WorkModel.findById(newwork._id)
+                        .populate({
+                            path: "owner",
+                            select: "-password -__v -role",
+                            model: "User"
+                        })
+                        .exec((err1, res) => {
+                            if (err1) {
+                                return reject(err1);
+                            }
+                            return resolve(res);
+                        })
+                });
         });
     });
 }
 
+const ChooseWork = (userId, workId) => {
+    return new Promise((resolve, reject) => {
+        UserModel.findById(userId, (err, user) => {
+            if (err) {
+                return reject("Error occur");
+            }
+            if (!user) {
+                return reject("No user found");
+            }
+            if (user.role !== 0) {
+                return reject("You are not a worker");
+            }
+            WorkModel.updateOne(
+                { _id: new ObjectId(workId) },
+                { $set: { helper: user._id } },
+                (err, raw) => {
+                    if (err) {
+                        reject("Error in update database");
+                    }
+                    WorkModel.findById(workId)
+                        .populate({ path: "owner", select: "-password -__v -role", model: "User" })
+                        .populate({ path: "helper", select: "-password -__v -role", model: "User" })
+                        .exec((err1, work) => {
+                            if (err1) {
+                                return reject("Error occur");
+                            }
+                            return resolve(work);
+                        });
+                });
+        });
+    });
+}
 
 
 const GetWorkingListOfUser =
@@ -72,4 +110,4 @@ const GetWorkingListOfUser =
         });
     }
 
-export { CreateWork, GetWorkingListOfUser }
+export { CreateWork, GetWorkingListOfUser, ChooseWork }
