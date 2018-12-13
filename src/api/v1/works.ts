@@ -12,11 +12,20 @@ router.post("/", (req, res) => {
   const typeList = req.body.type;
   const description = req.body.description;
   const time = req.body.time;
+  const timespan = req.body.timespan;
   const location = req.body.location;
   const salary = req.body.salary;
   const userId = req.user.id;
 
-  WorkModel.CreateWork(userId, typeList, time, salary, location, description)
+  WorkModel.CreateWork(
+    userId,
+    typeList,
+    time,
+    timespan,
+    salary,
+    location,
+    description
+  )
     .then(data => {
       res.status(200);
       return res.json({
@@ -42,8 +51,9 @@ router.put("/:workId", (req, res) => {
   // owner: update work info
   const workId = req.params.workId;
   const userId = req.user.id;
+  const userRole = req.user.role;
 
-  WorkModel.ChooseWork(userId, workId)
+  WorkModel.ChooseWork(userId, userRole, workId)
     .then(work => {
       res.status(200);
       return res.json({
@@ -68,7 +78,8 @@ router.put("/:workId", (req, res) => {
 
 router.get("/", (req, res) => {
   const userId = req.user.id;
-  WorkModel.GetWorkingListOfUser(userId)
+  const userRole = req.user.role;
+  WorkModel.GetWorkingListOfUser(userId, userRole)
     .then(data => {
       res.status(200);
       return res.json({

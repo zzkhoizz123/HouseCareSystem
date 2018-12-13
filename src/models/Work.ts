@@ -20,6 +20,9 @@ class Work extends Typegoose {
   time: Date;
 
   @prop()
+  timespan: number;
+
+  @prop()
   status: number;
 
   @prop()
