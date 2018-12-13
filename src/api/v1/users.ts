@@ -63,14 +63,13 @@ router.post("/signin", (req, res) => {
   UserModel.VerifyUser(username, password)
     .then(user => {
       const token = jwt.sign(user, "secret");
+      user["token"] = token;
       res.status(200);
       res.json({
         message: "Login success",
         success: true,
         error: 0,
-        data: {
-          token
-        }
+        data: user
       });
     })
     .catch(msg => {
