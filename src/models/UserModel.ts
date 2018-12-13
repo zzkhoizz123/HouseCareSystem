@@ -38,27 +38,23 @@ const CreateNewUser = (username, password, name, email, role) => {
 
 const VerifyUser = (username, password) => {
   return new Promise((resolve, reject) => {
-    UserModel.findOne(
-      { username },
-      (err, user) => {
-        if (user) {
-          if (bcrypt.compareSync(password, user.password)) {
-            resolve({
-              role: user.role,
-              id: user._id,
-              name: user.name,
-              username: user.username,
-              email: user.email
-            });
-          }
-          else {
-            reject("Wrong credential");
-          }
+    UserModel.findOne({ username }, (err, user) => {
+      if (user) {
+        if (bcrypt.compareSync(password, user.password)) {
+          resolve({
+            role: user.role,
+            id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email
+          });
         } else {
           reject("Wrong credential");
         }
+      } else {
+        reject("Wrong credential");
       }
-    );
+    });
   });
 };
 
