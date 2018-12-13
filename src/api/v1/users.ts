@@ -19,7 +19,7 @@ router.post("/signup", (req, res) => {
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
-  let role = req.body.type;
+  let role = req.body.role;
 
   if (!name || !email || !username || !password) {
     res.status(200);
@@ -31,7 +31,7 @@ router.post("/signup", (req, res) => {
     });
   }
 
-  if (!role) {
+  if (role == null) {
     role = 1;
   }
 
@@ -62,7 +62,7 @@ router.post("/signin", (req, res) => {
 
   UserModel.VerifyUser(username, password)
     .then(user => {
-      const token = jwt.sign({ user }, "secret");
+      const token = jwt.sign(user, "secret");
       res.status(200);
       res.json({
         message: "Login success",
