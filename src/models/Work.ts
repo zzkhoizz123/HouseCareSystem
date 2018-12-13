@@ -20,15 +20,15 @@ class Work extends Typegoose {
   time: Date;
 
   @prop()
-  status: string;
+  status: number;
 
   @prop()
   expectedSalary: string;
 
-  @prop({ ref: User, required: true })
+  @prop({ ref: User, required: false })
   owner: Ref<User>;
 
-  @prop({ ref: User, required: true })
+  @prop({ ref: User, required: false })
   helper: Ref<User>;
 }
 

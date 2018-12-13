@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import * as Promise from "bluebird";
 import { Schema, model } from "mongoose";
 
@@ -14,7 +14,8 @@ const UserSchema = new Schema({
   character: { type: Schema.Types.ObjectId, ref: "Character" },
   profile: { type: Schema.Types.ObjectId, ref: "Profile" },
   property: { type: Schema.Types.ObjectId, ref: "Property" },
-  workingList: [{ type: Schema.Types.ObjectId, ref: "Work" }]
+  workList: [{type: Schema.Types.ObjectId, ref: "work"}], // works that owner want to rent and helped want to be rented
+  workingList: [{ type: Schema.Types.ObjectId, ref: "Work" }] // works that helper and owner have booked 
 });
 
 const WorkSchema = new Schema({
@@ -32,7 +33,7 @@ const WorkSchema = new Schema({
     type: Date, // String to date
     default: Date.now
   },
-  status: { type: String },
+  status: { type: Number },
   expectedSalary: { type: String },
   owner: { type: Schema.Types.ObjectId, ref: "User" },
   helper: { type: Schema.Types.ObjectId, ref: "User" }

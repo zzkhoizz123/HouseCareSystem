@@ -38,15 +38,24 @@ const CreateNewUser = (username, password, name, email, role) => {
 
 const VerifyUser = (username, password) => {
   return new Promise((resolve, reject) => {
-    password = bcrypt.hashSync(password);
     UserModel.findOne(
       {
-        $and: [{ username }, { password }]
+        $and: [{ username }]
       },
       (err, user) => {
         if (user) {
-          const jwt = "random jwt";
-          resolve({ jwt, role: user.role });
+          if (bcrypt.compareSync(password, user.password)) {
+            resolve({
+              role: user.role,
+              id: user.id,
+              name: user.name,
+              username: user.username,
+              email: user.email
+            });
+          }
+          else {
+            reject("Wrong credential");
+          }
         } else {
           reject("Wrong credential");
         }

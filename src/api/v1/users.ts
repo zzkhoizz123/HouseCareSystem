@@ -1,6 +1,10 @@
 import { Router } from "express";
 import * as UserModel from "models/UserModel";
+import * as jwt from "jsonwebtoken";
 
+import { factory } from "config/LoggerConfig";
+const dbLog = factory.getLogger("database.Mongo");
+const routeLog = factory.getLogger("request.Route");
 const router = Router();
 
 /**
@@ -19,7 +23,7 @@ router.post("/signup", (req, res) => {
 
   if (!name || !email || !username || !password) {
     res.status(200);
-    res.json({
+    return res.json({
       message: "Missing required field (name, email, username, password)",
       success: false,
       error: 0,
@@ -57,13 +61,16 @@ router.post("/signin", (req, res) => {
   const password = req.body.password;
 
   UserModel.VerifyUser(username, password)
-    .then(data => {
+    .then(user => {
+      const token = jwt.sign({ user }, "secret");
       res.status(200);
       res.json({
         message: "Login success",
         success: true,
         error: 0,
-        data
+        data: {
+          token
+        }
       });
     })
     .catch(msg => {

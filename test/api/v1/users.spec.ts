@@ -16,16 +16,19 @@ describe("Sign up a new User", () => {
     server = require("server").server;
     done();
   });
-  beforeEach("cleardb", () => {
-    return UserModel.remove({});
-  });
-  beforeEach(() => {
-    const user = new UserModel({
-      name: "A",
-      username: "A",
-      password: "1",
-      email: "A@gmail.com"
+  beforeEach("cleardb", (done) => {
+    UserModel.deleteMany({}, () => {
+      done();
     });
+  });
+  beforeEach("create dummy user", () => {
+    const user = new UserModel({
+      name: "dummy user",
+      username: "dummy",
+      password: "user",
+      email: "dummy@user.com"
+    });
+    // UserModel.create(user, () => done());
     return user.save();
   });
 
@@ -57,10 +60,10 @@ describe("Sign up a new User", () => {
 
   it("Create same username", done => {
     const user = {
-      name: "khoi3",
-      email: "khoi3@gmail.com",
-      username: "A",
-      password: "pass"
+      name: "dummy",
+      email: "notdummy@gmail.com",
+      username: "dummy",
+      password: "notuser"
     };
     chai
       .request(server)
