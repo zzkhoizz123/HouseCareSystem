@@ -106,4 +106,41 @@ router.get("/:id", (req, res) => {
     });
 });
 
+router.post("/reset_password", (req, res) => {
+  const name = req.body.username;
+  const pass = req.body.password;
+  const newpass = req.body.new_password;
+
+  if (!name || !pass || !newpass) {
+    res.json({
+      message: "no username or password or newPassword",
+      success: false,
+      error: 1,
+      data: {}
+    });
+    res.end();
+    return;
+  }
+
+  UserModel.ResetPassword(name, pass, newpass)
+    .then(result => {
+      res.status(200);
+      return res.json({
+        message: "Success Reset Password",
+        success: true,
+        error: 0,
+        data: {}
+      });
+    })
+    .catch(msg => {
+      res.status(200);
+      return res.json({
+        message: msg,
+        success: false,
+        error: 0,
+        data: {}
+      });
+    });
+});
+
 export { router };

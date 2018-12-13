@@ -129,7 +129,7 @@ const ResetPassword = (name, curpwd, newpwd) => {
         { $set: { password: HashPassword(newpwd) } },
         (err1, result) => {
           if (err1) {
-            return reject(err1);
+            return reject("Error occur");
           }
 
           dbLog.info("Ok: " + result);
