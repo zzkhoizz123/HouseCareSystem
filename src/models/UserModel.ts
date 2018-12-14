@@ -59,19 +59,34 @@ const VerifyUser = (username, password) => {
 };
 
 const GetUserByID = id => {
+  routeLog.info(id);
   return new Promise((resolve, reject) => {
-    UserModel.findOne({ id: new ObjectId(id) }, (err, helper) => {
-      if (err) {
-        return reject("Error occured");
-      }
-      if (helper) {
-        return resolve(helper);
-      } else {
-        return reject("No user found");
-      }
-    });
+    UserModel.findOne({ _id: new ObjectId(id) })
+      .select("-password -__v")
+      .exec((err, res) => {
+        if (err) {
+          return reject("Error occur");
+        }
+        return resolve(res);
+      });
   });
 };
+
+// const GetUserByID = id => {
+//   routeLog.info(id);
+//   return new Promise((resolve, reject) => {
+//     UserModel.findOne({ _id: new ObjectId(id) }, (err, helper) => {
+//       if (err) {
+//         return reject("Error occured");
+//       }
+//       if (helper) {
+//         return resolve(helper);
+//       } else {
+//         return reject("No user found");
+//       }
+//     });
+//   });
+// };
 
 const GetUserByUsername = name => {
   return new Promise((resolve, reject) => {

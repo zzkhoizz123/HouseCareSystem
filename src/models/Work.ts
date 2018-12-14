@@ -8,7 +8,7 @@ class Work extends Typegoose {
   id: number;
 
   @prop()
-  type: string;
+  type: Array<string>;
 
   @prop()
   description: string;
