@@ -23,7 +23,10 @@ class User extends Typegoose {
   sex: string;
 
   @prop()
-  salt: string;
+  DoB: Date;
+
+  @prop()
+  experience: number;
 
   @prop()
   role: number;

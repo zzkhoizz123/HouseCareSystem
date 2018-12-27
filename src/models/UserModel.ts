@@ -5,13 +5,15 @@ import { model, Schema } from "mongoose";
 
 import { factory } from "config/LoggerConfig";
 import * as Model from "models/Models";
+import { Property } from "./Property";
 
 const dbLog = factory.getLogger("database.Mongo");
 const routeLog = factory.getLogger("request.Route");
 const salt = "5802ae89"; // md5('ohmygod')[:8]
 const UserModel = Model.UserModel;
+const PropertyModel = Model.PropertyModel;
 
-const CreateNewUser = (username, password, name, email, role) => {
+const CreateNewUser = (username, password, name, email, address, DoB, experience, sex, role) => {
   return new Promise((resolve, reject) => {
     UserModel.findOne(
       {
@@ -22,11 +24,16 @@ const CreateNewUser = (username, password, name, email, role) => {
           return reject("Username or Email existed");
         }
         password = bcrypt.hashSync(password);
+        const prop = new PropertyModel({location: address});
         const user = new UserModel({
           username,
           password,
           name,
           email,
+          sex,
+          DoB: new Date(DoB),
+          experience,
+          property : prop,
           role
         });
         user.save();
@@ -62,6 +69,19 @@ const GetUserByID = id => {
   routeLog.info(id);
   return new Promise((resolve, reject) => {
     UserModel.findOne({ _id: new ObjectId(id) })
+      .select("-password -__v")
+      .exec((err, res) => {
+        if (err) {
+          return reject("Error occur");
+        }
+        return resolve(res);
+      });
+  });
+};
+
+const GetWorker = () => {
+  return new Promise((resolve, reject) => {
+    UserModel.find({ role: 1 })
       .select("-password -__v")
       .exec((err, res) => {
         if (err) {
@@ -160,5 +180,6 @@ export {
   VerifyUser,
   ResetPassword,
   GetUserByID,
-  GetUserByUsername
+  GetUserByUsername,
+  GetWorker
 };
