@@ -71,6 +71,7 @@ const ChooseWork = (userId, userRole, workId) => {
       { _id: new ObjectId(workId) },
       { $set: { helper: userId } }
     )
+      .select("-__v")
       .populate({
         path: "owner",
         select: "-password -__v -role",
@@ -101,19 +102,31 @@ const GetWorkList = (userId, userRole, query) => {
     WorkModel.find(
       {
         $and: [userQuery, query]
-      },
-      (err, lst) => {
+      })
+      .select("-__v")
+      .populate({
+        path: "owner",
+        select: "-password -__v -role",
+        model: "User"
+      })
+      .populate({
+        path: "helper",
+        select: "-password -__v -role",
+        model: "User"
+      })
+      .exec ((err, lst) => {
         if (err) {
           return reject("Error when updating database");
         }
         return resolve(lst);
-      }
-    );
+      });
+    
   });
 };
 
 const GetWorkingListOfUser = (userId, userRole) => {
-  return GetWorkList(userId, userRole, { time: { $gt: Date.now() } });
+   return GetWorkList(userId, userRole, {});
+  //return GetWorkList(userId, userRole, { time: { $gt: Date.now() } });
 };
 
 export { CreateWork, GetWorkingListOfUser, ChooseWork, GetWorkList };
