@@ -26,7 +26,12 @@ describe("Sign up a new User", () => {
       name: "dummy user",
       username: "dummy",
       password: "user",
-      email: "dummy@user.com"
+      email: "dummy@user.com",
+      address : "1",
+      DoB : "1/1/2001",
+      experience : 1,
+      sex : "male",
+      role : 1
     });
     // UserModel.create(user, () => done());
     return user.save();
@@ -39,10 +44,15 @@ describe("Sign up a new User", () => {
 
   it("Create a new helper", done => {
     const user = {
-      name: "khoi2",
-      email: "khoi2@gmail.com",
-      username: "khoi2",
-      password: "3"
+      name: "2",
+      email: "2@gmail.com",
+      username: "2",
+      password: "2",
+      address : "2",
+      DoB : "2/2/2002",
+      experience : 2,
+      sex : "male",
+      role : 0
     };
     chai
       .request(server)
@@ -58,12 +68,17 @@ describe("Sign up a new User", () => {
       });
   });
 
-  it("Create same username", done => {
+  it("Create user with same username", done => {
     const user = {
       name: "dummy",
       email: "notdummy@gmail.com",
       username: "dummy",
-      password: "notuser"
+      password: "notuser",
+      address : "2",
+      DoB : "2/2/2002",
+      experience : 2,
+      sex : "male",
+      role : 0
     };
     chai
       .request(server)
@@ -79,11 +94,16 @@ describe("Sign up a new User", () => {
       });
   });
 
-  it("No Password", done => {
+  it("Create user with no Password", done => {
     const user = {
       name: "Nguyen Van A",
       email: "nguyenvana@gmail.com",
-      username: "nguyenvana"
+      username: "nguyenvana",
+      address : "2",
+      DoB : "2/2/2002",
+      experience : 2,
+      sex : "male",
+      role : 0
     };
     chai
       .request(server)

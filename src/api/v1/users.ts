@@ -26,13 +26,13 @@ router.post("/signup", (req, res) => {
   const sex = req.body.sex;
   let role = req.body.role;
 
-  console.log("name: %s, password: %s, username:%s, email: %s address: %s, role: %s", 
-              !name, 
-              !password, 
-              !username, 
-              !email,
-              !address, 
-              !role);
+  // console.log("name: %s, password: %s, username:%s, email: %s address: %s, role: %s", 
+  //             !name, 
+  //             !password, 
+  //             !username, 
+  //             !email,
+  //             !address, 
+  //             !role);
               
 
   if (!name || !email || !username || !password || !address) {

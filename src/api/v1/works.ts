@@ -17,6 +17,15 @@ router.post("/", (req, res) => {
   const salary = req.body.salary;
   const userId = req.user.id;
 
+  if (time < Date.now()){
+    return res.json({
+      message: "Time is less than Now",
+      success: false,
+      error: 0,
+      data: {}
+    });
+  }
+
   WorkModel.CreateWork(
     userId,
     typeList,
@@ -66,6 +75,7 @@ router.put("/:workId", (req, res) => {
       });
     })
     .catch(msg => {
+      //console.log(msg);
       res.status(200);
       return res.json({
         message: msg,
