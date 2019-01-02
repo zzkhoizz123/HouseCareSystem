@@ -1,74 +1,44 @@
-import {Schema, model} from 'mongoose';
-import bcrypt from 'bcryptjs';
-import * as Promise from 'bluebird';
+import { Document } from "mongoose";
+import { prop, Typegoose, ModelType, InstanceType, Ref } from "typegoose";
 
+import { Work } from "models/Work";
 
-const UserSchema = new Schema({
-    username: {type: String, index: true, unique: true},
-    password: {type: String},
-    email: {type: String, unique: true},
-    name: {type: String}
-});
+class User extends Typegoose {
+  @prop()
+  id: number;
 
-var User = model('User', UserSchema);
+  @prop()
+  username: string;
 
-let createUser = function(newUser, callback) {
-    bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash(newUser.password, salt, function(err, hash) {
-            newUser.password = hash;
-            newUser.save(callback);
-        });
-    });
-};
+  @prop()
+  password: string;
 
-let getUserByUsername = function(username, callback) {
-    var query = {username: username};
-    User.findOne(query, callback);
-};
+  @prop()
+  email: string;
 
-let getUserById = function(id, callback) {
-    User.findById(id, callback);
-};
+  @prop()
+  name: string;
 
-let comparePassword = function(candidatePassword, hash, callback) {
-    bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
-        if (err) throw err;
-        callback(null, isMatch);
-    });
-};
+  @prop()
+  sex: string;
 
-let findByRegExUsername = (name) => {
-    return new Promise((resolve, reject) => {
-        User.findOne(
-            {username: new RegExp('^' + name + '\\b', 'i')}, (err, user) => {
-                if (err) return reject(err);
-                if (user)
-                    return reject();
-                else
-                    return resolve(user);
-            });
-    });
-};
+  @prop()
+  salt: string;
 
-let findByRegExEmail = (email) => {
-    return new Promise((resolve, reject) => {
-        User.findOne(
-            {email: new RegExp('^' + email + '\\b', 'i')}, (err, user) => {
-                if (err) return reject(err);
-                if (user)
-                    return reject();
-                else
-                    return resolve(user);
-            });
-    });
-};
+  @prop()
+  role: number;
 
-export {
-    User,
-    findByRegExUsername,
-    findByRegExEmail,
-    getUserById,
-    getUserByUsername,
-    comparePassword,
-    createUser
+  @prop()
+  character: object;
+
+  @prop()
+  profile: object;
+
+  @prop()
+  property: object;
+
+  @prop({ ref: Work })
+  workingList: Array<Ref<Work>>;
 }
+
+export { User };

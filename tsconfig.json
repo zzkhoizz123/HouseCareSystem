@@ -2,10 +2,19 @@
   "compilerOptions": {
     "outDir": "./built",
     "allowJs": true,
-    "target": "es5",
-    "lib": ["es6", "dom"]
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": "src",
+    "paths": {
+    }
   },
   "include": [
-    "./src/**/*"
-  ]
+    "./src/**/*.ts",
+    "./test/**/*.spec.ts"
+  ],
+  "rootDirs": ["src", "test"]
 }
