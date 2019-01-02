@@ -90,30 +90,36 @@ const ChooseWork = (userId, userRole, workId) => {
   });
 };
 
-const GetWorkList = (userId, userRole, query) => {
+const GetWorkList = query => {
   return new Promise((resolve, reject) => {
-    let userQuery: object;
-    if (userRole === 0) {
-      userQuery = { helper: new ObjectId(userId) };
-    } else {
-      userQuery = { owner: new ObjectId(userId) };
-    }
-    WorkModel.find(
-      {
-        $and: [userQuery, query]
-      },
-      (err, lst) => {
-        if (err) {
-          return reject("Error when updating database");
-        }
+    WorkModel.find(query)
+      .populate({
+        path: "owner",
+        select: "-password -__v -role",
+        model: "User"
+      })
+      .populate({
+        path: "helper",
+        select: "-password -__v -role",
+        model: "User"
+      })
+      .then(lst => {
         return resolve(lst);
-      }
-    );
+      })
+      .catch(err => {
+        return reject(err);
+      });
   });
 };
 
 const GetWorkingListOfUser = (userId, userRole) => {
-  return GetWorkList(userId, userRole, { time: { $gt: Date.now() } });
+  let userQuery: object;
+  if (userRole === 0) {
+    userQuery = { helper: new ObjectId(userId) };
+  } else {
+    userQuery = { owner: new ObjectId(userId) };
+  }
+  return GetWorkList({ $and: [userQuery, { time: { $gt: Date.now() } }] });
 };
 
 export { CreateWork, GetWorkingListOfUser, ChooseWork, GetWorkList };

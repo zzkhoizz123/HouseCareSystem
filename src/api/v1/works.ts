@@ -100,4 +100,31 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/pending", (req, res) => {
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  WorkModel.GetWorkList({
+    time: { $gt: Date.now() },
+    helper: null
+  })
+    .then(data => {
+      res.status(200);
+      return res.json({
+        message: "Get Work success",
+        success: true,
+        error: 0,
+        data
+      });
+    })
+    .catch(msg => {
+      res.status(200);
+      return res.json({
+        message: msg,
+        success: false,
+        error: 0,
+        data: {}
+      });
+    });
+});
+
 export { router };
