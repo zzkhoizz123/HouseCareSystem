@@ -11,7 +11,8 @@ let serverInstance;
 database()
   .catch(err => {
     dbLog.error("Cannot connect to MongoDB");
-    dbLog.error(err);
+    // dbLog.error(err); // this returns undefined
+    process.exit(1);
   })
   .then(() => {
     dbLog.info("MongoDB Connected...");
@@ -20,6 +21,7 @@ database()
   .catch(err => {
     routeLog.error("Cannot start server");
     routeLog.error(err);
+    process.exit(1);
   })
   .then(s => {
     serverInstance = s;

@@ -47,7 +47,8 @@ describe("Work API end point", () => {
         username: "1",
         password: "1",
         email: "1@user.com",
-        name: "1"
+        name: "1",
+        role: "0"
       })
       .end((err, res) => {
         done();

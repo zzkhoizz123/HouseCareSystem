@@ -73,7 +73,7 @@ describe("Sign up a new User", () => {
         email: "helper@gmail.com",
         username: "helper",
         password: "helper",
-        role: "1"
+        role: "0"
       };
       chai
         .request(serverInstance)
