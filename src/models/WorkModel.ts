@@ -69,7 +69,7 @@ const ChooseWork = (userId, userRole, workId) => {
     }
     WorkModel.findOneAndUpdate(
       { _id: new ObjectId(workId) },
-      { $set: { helper: userId } }
+      { $set: { helper: ObjectId(userId) } }
     )
       .populate({
         path: "owner",
