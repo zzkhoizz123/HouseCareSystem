@@ -1,5 +1,3 @@
-process.env.NODE_ENV = "test";
-
 import * as chai from "chai";
 import * as moment from "moment";
 import "chai-http";

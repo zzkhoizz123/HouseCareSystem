@@ -29,15 +29,31 @@ gulp.task("prod", () => {
     exec: "ts-node -r tsconfig-paths/register",
     env: {
       // setup for production build
-      PORT: 8080
+      // load file?
+      PORT: 8080,
+      TOKEN_SECRET: "",
+      MONGODB_HOST: "",
+      MONGODB_PORT: "",
+      MONGODB_DATABASE: "",
+      MONGODB_USERNAME: "",
+      MONGODB_PASSWORD: "",
+      MONGODB_OPTION: "",
+      MONGODB_URI: ""
     }
   });
 });
 
 gulp.task("test", () => {
+  process.env.NODE_ENV = "test";
   return gulp
     .src("test/**/*.spec.ts", { base: "." })
     .pipe(tsProject())
     .pipe(gulp.dest("built"))
-    .pipe(mocha({ reporter: "nyan", require: ["ts-node/register"] }));
+    .pipe(
+      mocha({
+        // list of reporter: https://mochajs.org/#reporters
+        reporter: "spec",
+        require: ["ts-node/register"]
+      })
+    );
 });

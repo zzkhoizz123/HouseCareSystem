@@ -13,7 +13,7 @@ const routeLog = LoggerFactory.getLogger("request.Route");
 
 app.use(cors());
 app.use(
-  jwt({ secret: "secret" }).unless({
+  jwt({ secret: server_config.TOKEN_SECRET }).unless({
     path: ["/api/v1/users/signin", "/api/v1/users/signup", "/api/v1/users/"]
   })
 );
@@ -26,6 +26,28 @@ app.use("/**", (req, res, next) => {
 });
 
 app.use("/api/", api);
+
+// error handling
+app.use((err, req, res, next) => {
+  if (err.name === "UnauthorizedError") {
+    res.status(401);
+    res.json({
+      message: "Invalid Token",
+      success: false,
+      error: 0,
+      data: {}
+    });
+    res.end();
+  } else {
+    res.status(err.status);
+    res.json({
+      message: err.message,
+      success: false,
+      error: err.code,
+      data: {}
+    });
+  }
+});
 
 // silly way to export the server
 const server = () =>
