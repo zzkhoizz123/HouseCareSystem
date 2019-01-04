@@ -13,11 +13,15 @@ chai.use(require("chai-http")); // tslint:disable-line
 
 describe("Work API end point", () => {
   let serverInstance;
+  let databaseInstance;
   let ownerToken = "";
   let helperToken = "";
 
   before("connecting database", done => {
-    database().then(() => done());
+    database().then(db => {
+      databaseInstance = db;
+      done();
+    });
   });
   before("start server", done => {
     server().then(s => {
@@ -27,6 +31,10 @@ describe("Work API end point", () => {
   });
   after(done => {
     serverInstance.close();
+    done();
+  });
+  after(done => {
+    databaseInstance.disconnect();
     done();
   });
 

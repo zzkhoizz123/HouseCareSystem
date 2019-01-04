@@ -2,9 +2,8 @@ import { Router } from "express";
 import * as bodyParser from "body-parser";
 import * as WorkModel from "models/WorkModel";
 
-import { factory } from "config/LoggerConfig";
-const dbLog = factory.getLogger("database.Mongo");
-const routeLog = factory.getLogger("request.Route");
+import logger from "utils/logger";
+
 const router = Router();
 router.use(bodyParser.json());
 

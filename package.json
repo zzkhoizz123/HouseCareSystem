@@ -34,9 +34,9 @@
     "mongoose": "^5.3.16",
     "reflect-metadata": "^0.1.12",
     "ts-custom-error": "^2.2.2",
+    "ts-log-debug": "^4.0.4",
     "typegoose": "^5.4.1",
-    "typescript": "^3.2.2",
-    "typescript-logging": "^0.6.3"
+    "typescript": "^3.2.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",

@@ -1,11 +1,9 @@
 import * as Promise from "bluebird";
 import { ObjectId } from "bson";
 
-import { factory } from "config/LoggerConfig";
+import logger from "utils/logger";
 import * as Model from "models/Models";
 
-const dbLog = factory.getLogger("database.Mongo");
-const routeLog = factory.getLogger("request.Route");
 const UserModel = Model.UserModel;
 const WorkModel = Model.WorkModel;
 

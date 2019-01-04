@@ -12,9 +12,13 @@ chai.use(require("chai-http")); // tslint:disable-line
 
 describe("Sign up a new User", () => {
   let serverInstance;
+  let databaseInstance;
 
   before("connecting database", done => {
-    database().then(() => done());
+    database().then(db => {
+      databaseInstance = db;
+      done();
+    });
   });
   before("start server", done => {
     server().then(s => {
@@ -24,6 +28,10 @@ describe("Sign up a new User", () => {
   });
   after(done => {
     serverInstance.close();
+    done();
+  });
+  after(done => {
+    databaseInstance.disconnect();
     done();
   });
 

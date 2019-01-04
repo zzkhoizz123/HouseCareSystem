@@ -2,9 +2,9 @@ import { Router } from "express";
 import * as UserModel from "models/UserModel";
 import * as jwt from "jsonwebtoken";
 
-import { factory } from "config/LoggerConfig";
-const dbLog = factory.getLogger("database.Mongo");
-const routeLog = factory.getLogger("request.Route");
+import RequestError from "utils/RequestError";
+import logger from "utils/logger";
+
 const router = Router();
 
 /**
@@ -14,7 +14,7 @@ const router = Router();
  *     @param username: UserModelname on System
  *     @param password: UserModel's password
  */
-router.post("/signup", (req, res) => {
+router.post("/signup", (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const username = req.body.username;
@@ -22,13 +22,8 @@ router.post("/signup", (req, res) => {
   let role = req.body.role;
 
   if (!name || !email || !username || !password) {
-    res.status(200);
-    return res.json({
-      message: "Missing required field (name, email, username, password)",
-      success: false,
-      error: 0,
-      data: {}
-    });
+    next(new RequestError(0, "Missing required field", 200));
+    return;
   }
 
   if (role == null) {
@@ -46,13 +41,7 @@ router.post("/signup", (req, res) => {
       });
     })
     .catch(msg => {
-      res.status(200);
-      res.json({
-        message: msg,
-        success: false,
-        error: 0,
-        data: {}
-      });
+      next(new RequestError(0, "Cannot create user", 200));
     });
 });
 

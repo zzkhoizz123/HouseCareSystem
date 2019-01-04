@@ -4,12 +4,11 @@ import * as cors from "cors";
 import * as jwt from "express-jwt";
 
 import * as server_config from "config/server";
-import { factory as LoggerFactory } from "config/LoggerConfig";
+import logger from "utils/logger";
 
 import { router as api } from "api/api";
 
 const app = express();
-const routeLog = LoggerFactory.getLogger("request.Route");
 
 app.use(cors());
 app.use(
@@ -20,8 +19,8 @@ app.use(
 app.use(bodyParser.json());
 
 app.use("/**", (req, res, next) => {
-  routeLog.info("[" + req.method + "] " + req.originalUrl);
-  // routeLog.info(JSON.stringify(req.body));
+  logger.info("[" + req.method + "] " + req.originalUrl);
+  // logger.info(JSON.stringify(req.body));
   next();
 });
 
@@ -52,7 +51,7 @@ app.use((err, req, res, next) => {
 // silly way to export the server
 const server = () =>
   new Promise((resolve, reject) => {
-    routeLog.info("Starting Server");
+    logger.info("Starting Server");
     const s = app.listen(server_config.PORT, err => {
       if (err) {
         reject(err);

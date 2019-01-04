@@ -3,11 +3,9 @@ import * as Promise from "bluebird";
 import { ObjectId } from "bson";
 import { model, Schema } from "mongoose";
 
-import { factory } from "config/LoggerConfig";
+import logger from "utils/logger";
 import * as Model from "models/Models";
 
-const dbLog = factory.getLogger("database.Mongo");
-const routeLog = factory.getLogger("request.Route");
 const salt = "5802ae89"; // md5('ohmygod')[:8]
 const UserModel = Model.UserModel;
 
@@ -59,7 +57,7 @@ const VerifyUser = (username, password) => {
 };
 
 const GetUserByID = id => {
-  routeLog.info(id);
+  logger.info(id);
   return new Promise((resolve, reject) => {
     UserModel.findOne({ _id: new ObjectId(id) })
       .select("-password -__v")
@@ -71,22 +69,6 @@ const GetUserByID = id => {
       });
   });
 };
-
-// const GetUserByID = id => {
-//   routeLog.info(id);
-//   return new Promise((resolve, reject) => {
-//     UserModel.findOne({ _id: new ObjectId(id) }, (err, helper) => {
-//       if (err) {
-//         return reject("Error occured");
-//       }
-//       if (helper) {
-//         return resolve(helper);
-//       } else {
-//         return reject("No user found");
-//       }
-//     });
-//   });
-// };
 
 const GetUserByUsername = name => {
   return new Promise((resolve, reject) => {
@@ -147,7 +129,7 @@ const ResetPassword = (name, curpwd, newpwd) => {
             return reject("Error occur");
           }
 
-          dbLog.info("Ok: " + result);
+          logger.info("Ok: " + result);
           return resolve(result);
         }
       );

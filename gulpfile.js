@@ -12,16 +12,20 @@ require("ts-node").register(tsProject);
 process.env.TS_NODE_PROJECT = "./tsconfig.json";
 process.env.TS_CONFIG_PATHS = true;
 
-gulp.task("start", () => {
+gulp.task("start", done => {
   return nodemon({
     script: "index.ts",
     watch: ["src/**/*.ts"],
     ext: "ts",
-    exec: "ts-node -r tsconfig-paths/register"
+    exec: "ts-node -r tsconfig-paths/register",
+    env: {
+      LOG_FILE: "./log/app.log"
+    },
+    done: done
   });
 });
 
-gulp.task("prod", () => {
+gulp.task("prod", done => {
   return nodemon({
     script: "index.ts",
     watch: ["src/**/*.ts"],
@@ -38,13 +42,16 @@ gulp.task("prod", () => {
       MONGODB_USERNAME: "",
       MONGODB_PASSWORD: "",
       MONGODB_OPTION: "",
-      MONGODB_URI: ""
-    }
+      MONGODB_URI: "",
+      LOG_FILE: ""
+    },
+    done: done
   });
 });
 
 gulp.task("test", () => {
   process.env.NODE_ENV = "test";
+  process.env.LOG_FILE = "./log/app-test.log";
   return gulp
     .src("test/**/*.spec.ts", { base: "." })
     .pipe(tsProject())
