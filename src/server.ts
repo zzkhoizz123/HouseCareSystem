@@ -2,6 +2,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as jwt from "express-jwt";
+import * as gracefulShutdown from "http-graceful-shutdown";
 
 import * as server_config from "config/server";
 import logger from "utils/logger";
@@ -56,6 +57,7 @@ const server = () =>
       if (err) {
         reject(err);
       } else {
+        gracefulShutdown(s);
         resolve(s);
       }
     });

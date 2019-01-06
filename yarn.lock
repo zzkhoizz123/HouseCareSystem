@@ -1110,6 +1110,13 @@ debug@3.X, debug@^3.1.0:
   dependencies:
     ms "^2.1.1"
 
+debug@^4.1.0:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
+  integrity sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
+  dependencies:
+    ms "^2.1.1"
+
 decamelize@^1.1.1, decamelize@^1.1.2, decamelize@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
@@ -2107,6 +2114,13 @@ http-errors@1.6.3, http-errors@~1.6.2, http-errors@~1.6.3:
     inherits "2.0.3"
     setprototypeof "1.1.0"
     statuses ">= 1.4.0 < 2"
+
+http-graceful-shutdown@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/http-graceful-shutdown/-/http-graceful-shutdown-2.2.2.tgz#5fe4efc886d849ccef3896287e1d0815b4f1806e"
+  integrity sha512-ZDsNK0OLD05E7XLuvchzdVDyvWy/ucTm9PTPAxZh+HZ+QFXMA/kw+vjZ/HrTMG6CzmnReDIgLwVMxGn6+iZ9qw==
+  dependencies:
+    debug "^4.1.0"
 
 iconv-lite@0.4.23:
   version "0.4.23"

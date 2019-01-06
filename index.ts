@@ -28,7 +28,7 @@ database()
   });
 
 // handling CTRL+C
-process.on("SIGINT", () => {
+const onShutdown = () => {
   logger.info("Received SIGINT, closing SERVER and disconnect DATABASE");
   return new Promise(resolve => {
     serverInstance.close(() => resolve());
@@ -45,4 +45,7 @@ process.on("SIGINT", () => {
     .then(() => {
       process.exit(0);
     });
-});
+};
+
+process.on("SIGINT", onShutdown)
+process.on("SIGTERM", onShutdown)
