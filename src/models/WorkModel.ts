@@ -35,7 +35,9 @@ const CreateWork = (
           owner: user._id,
           helper: null
         });
-        WorkModel.create(work).then(newwork => {
+
+        WorkModel.create(work)
+        .then(newwork => {
           UserModel.update(
             { _id: user._id },
             { $push: { workingList: newwork._id } }
@@ -120,4 +122,30 @@ const GetWorkingListOfUser = (userId, userRole) => {
   return GetWorkList({ $and: [userQuery, { time: { $gt: Date.now() } }] });
 };
 
-export { CreateWork, GetWorkingListOfUser, ChooseWork, GetWorkList };
+
+const AddContractAddress = (workId, contractAddress)=>{
+  return new Promise((resolve, reject) => {
+    WorkModel.findOneAndUpdate(
+      {_id: new ObjectId(workId)},
+      {$set: {contractAddress}}
+    )
+    .populate({
+      path: "owner",
+      select: "-password -__v -role",
+      model: "User"
+    })
+    .populate({
+      path: "helper",
+      select: "-password -__v -role",
+      model: "User"
+    })
+    .exec((err, work) => {
+      if (err) {
+        return reject("Error occur");
+      }
+      return resolve(work);
+    });
+  });
+}
+
+export { CreateWork, GetWorkingListOfUser, ChooseWork, GetWorkList, AddContractAddress };

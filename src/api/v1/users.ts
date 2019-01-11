@@ -132,4 +132,35 @@ router.post("/reset_password", (req, res) => {
     });
 });
 
+router.post("/walletAddress",(req, res, next)=>{
+  const walletAddress = req.body.walletAddress;
+  const userId = req.user.id;
+
+  if(!walletAddress){
+    if (!walletAddress) {
+      next(new RequestError(0, "Missing required field", 200));
+      return;
+    }
+  }
+
+  UserModel.AddWalletAddress(userId, walletAddress)
+    .then(result=>{
+      res.status(200);
+      return res.json({
+        message: "Success Add Wallet address",
+        success: true,
+        error: 0,
+        data: result
+      });
+    })
+    .catch(msg=>{
+      return res.json({
+        message: msg,
+        success: false,
+        error: 0,
+        data: {}
+      });
+    });
+});
+
 export { router };

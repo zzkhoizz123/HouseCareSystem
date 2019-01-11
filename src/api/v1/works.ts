@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as bodyParser from "body-parser";
 import * as WorkModel from "models/WorkModel";
+import RequestError from "utils/RequestError";
 
 import logger from "utils/logger";
 
@@ -117,6 +118,34 @@ router.get("/pending", (req, res) => {
     })
     .catch(msg => {
       res.status(200);
+      return res.json({
+        message: msg,
+        success: false,
+        error: 0,
+        data: {}
+      });
+    });
+});
+
+router.post("/contractAddress", (req, res, next)=>{
+  const workId = req.body.workId;
+  const contractAddress = req.body.contractAddress;
+
+  if (!workId || !contractAddress){
+    next(new RequestError(0, "Missing required field", 200));
+  }
+
+  WorkModel.AddContractAddress(workId, contractAddress)
+    .then(result=>{
+      res.status(200);
+      return res.json({
+        message: "Success Add contract address",
+        success: true,
+        error: 0,
+        data: result
+      });
+    })
+    .catch(msg=>{
       return res.json({
         message: msg,
         success: false,

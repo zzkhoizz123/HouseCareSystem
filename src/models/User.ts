@@ -37,8 +37,14 @@ class User extends Typegoose {
   @prop()
   property: object;
 
+  @prop()
+  address: string;
+
   @prop({ ref: Work })
   workingList: Array<Ref<Work>>;
+
+  @prop()
+  walletAddress: string
 }
 
 export { User };

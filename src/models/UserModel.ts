@@ -137,10 +137,27 @@ const ResetPassword = (name, curpwd, newpwd) => {
   });
 };
 
+const AddWalletAddress = (userId, walletAddress) =>{
+  return new Promise((resolve, reject) => {
+    UserModel.findOneAndUpdate(
+      {_id: new ObjectId(userId)},
+      {$set: {walletAddress}}
+    )
+    .select("-password -__v")
+    .exec((err, user) => {
+      if (err) {
+        return reject("Error occur");
+      }
+      return resolve(user);
+    });
+  });
+}
+
 export {
   CreateNewUser,
   VerifyUser,
   ResetPassword,
   GetUserByID,
-  GetUserByUsername
+  GetUserByUsername,
+  AddWalletAddress
 };
