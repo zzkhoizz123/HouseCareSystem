@@ -19,7 +19,17 @@ router.post("/signup", (req, res, next) => {
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
+  const sex = req.body.sex;
+  const DoB = req.body.DoB;
+  const experience = req.body.experience;
+  //const salt = req.body.salt;
+  const address = req.body.address;
+  let walletAddress = req.body.walletAddress;
   let role = req.body.role;
+
+  if(!walletAddress){
+    walletAddress = null;
+  }
 
   if (!name || !email || !username || !password) {
     next(new RequestError(0, "Missing required field", 200));
@@ -30,7 +40,7 @@ router.post("/signup", (req, res, next) => {
     role = 1;
   }
 
-  UserModel.CreateNewUser(username, password, name, email, role)
+  UserModel.CreateNewUser(username, password, name, email, role, sex, address, DoB, experience, walletAddress)
     .then(msg => {
       res.status(200);
       res.json({

@@ -9,7 +9,7 @@ import * as Model from "models/Models";
 const salt = "5802ae89"; // md5('ohmygod')[:8]
 const UserModel = Model.UserModel;
 
-const CreateNewUser = (username, password, name, email, role) => {
+const CreateNewUser = (username, password, name, email, role, sex, address, DoB, experience, walletAddress) => {
   return new Promise((resolve, reject) => {
     UserModel.findOne(
       {
@@ -25,7 +25,12 @@ const CreateNewUser = (username, password, name, email, role) => {
           password,
           name,
           email,
-          role
+          role, 
+          sex,
+          address,
+          DoB,
+          experience,
+          walletAddress
         });
         user.save();
         return resolve("Signup Success");
