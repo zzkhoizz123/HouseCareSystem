@@ -32,8 +32,17 @@ const CreateNewUser = (username, password, name, email, role, sex, address, DoB,
           experience,
           walletAddress
         });
-        user.save();
-        return resolve("Signup Success");
+        UserModel.create(user)
+          .then(user2=>{
+            UserModel.findById(user2._id)
+              .select("-password -__v")
+              .exec((err2, res) => {
+                if (err2) {
+                  return reject("Error occur");
+                }
+                return resolve(res);
+              });
+          })
       }
     );
   });

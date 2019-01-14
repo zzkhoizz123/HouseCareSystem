@@ -30,7 +30,7 @@ class User extends Typegoose {
   role: number;
 
   @prop()
-  Dob: Date;
+  DoB: Date;
 
   @prop()
   experience: number;
