@@ -4,6 +4,7 @@ import * as WorkModel from "models/WorkModel";
 import RequestError from "utils/RequestError";
 
 import logger from "utils/logger";
+import { runInNewContext } from "vm";
 
 const router = Router();
 router.use(bodyParser.json());
@@ -16,6 +17,10 @@ router.post("/", (req, res) => {
   const location = req.body.location;
   const salary = req.body.salary;
   const userId = req.user.id;
+
+  if (!userId || !salary || !timespan){
+    next(new RequestError( 0, "Missing required fields" , 200))
+  }
 
   WorkModel.CreateWork(
     userId,

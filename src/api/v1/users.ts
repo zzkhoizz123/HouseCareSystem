@@ -19,16 +19,31 @@ router.post("/signup", (req, res, next) => {
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
-  const sex = req.body.sex;
-  const DoB = req.body.DoB;
-  const experience = req.body.experience;
-  //const salt = req.body.salt;
-  const address = req.body.address;
+  let sex = req.body.sex;
+  let DoB = req.body.DoB;
+  let experience = req.body.experience;
+  let address = req.body.address;
   let walletAddress = req.body.walletAddress;
   let role = req.body.role;
 
   if(!walletAddress){
     walletAddress = null;
+  }
+
+  if (!sex){
+    sex = null;
+  }
+
+  if (!DoB){
+    DoB = null;
+  }
+
+  if(!experience){
+    experience = null;
+  }
+
+  if(!address){
+    address = null;
   }
 
   if (!name || !email || !username || !password) {
