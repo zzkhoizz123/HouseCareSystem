@@ -8,10 +8,27 @@ import logger from "utils/logger";
 
 const router = Router();
 
+router.get("/me", (req, res, next) => {
+  UserModel.GetUserByID(req.user.id)
+    .then(data => {
+      res.status(200);
+      res.json({
+        message: "User with Id: " + req.user.id + " info",
+        success: true,
+        error: 0,
+        data
+      });
+    })
+    .catch(msg => {
+      next(new RequestError(0, msg, 403));
+      return;
+    });
+});
+
 /**
  * POST: /signup
  *     @param name:          string, Compulsory, "user"
- *     @param email:         string, Compulsory, "user@gmail.com" 
+ *     @param email:         string, Compulsory, "user@gmail.com"
  *     @param username:      string, Compulsory, "user"
  *     @param password:      string, Compulsory, "123"
  *     @param sex:           string, optional, "male"
@@ -33,26 +50,25 @@ router.post("/signup", (req, res, next) => {
   let walletAddress = req.body.walletAddress;
   let role = req.body.role;
 
-  if(!walletAddress){
+  if (!walletAddress) {
     walletAddress = null;
   }
 
-  if (!sex){
+  if (!sex) {
     sex = null;
   }
 
-  if (!DoB){
+  if (!DoB) {
     DoB = null;
-  }
-  else{
+  } else {
     DoB = ConvertDate(DoB);
   }
 
-  if(!experience){
+  if (!experience) {
     experience = null;
   }
 
-  if(!address){
+  if (!address) {
     address = null;
   }
 
@@ -65,7 +81,18 @@ router.post("/signup", (req, res, next) => {
     role = 1;
   }
 
-  UserModel.CreateNewUser(username, password, name, email, role, sex, address, DoB , experience, walletAddress)
+  UserModel.CreateNewUser(
+    username,
+    password,
+    name,
+    email,
+    role,
+    sex,
+    address,
+    DoB,
+    experience,
+    walletAddress
+  )
     .then(data => {
       res.status(200);
       res.json({
@@ -89,7 +116,7 @@ router.post("/signin", (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  if (!username || !password){
+  if (!username || !password) {
     next(new RequestError(0, "Missing reuired fields", 200));
     return;
   }
@@ -144,7 +171,7 @@ router.post("/reset_password", (req, res, next) => {
   const pass = req.body.password;
   const newpass = req.body.new_password;
 
-  if(!name || !pass || !newpass){
+  if (!name || !pass || !newpass) {
     next(new RequestError(0, "Missing required fields", 200));
     return;
   }
@@ -169,11 +196,11 @@ router.post("/reset_password", (req, res, next) => {
  * POST: /walletAddress
  *     @param walletAddress:    string, Compulsory, "11111"
  */
-router.post("/walletAddress",(req, res, next)=>{
+router.post("/walletAddress", (req, res, next) => {
   const walletAddress = req.body.walletAddress;
   const userId = req.user.id;
 
-  if(!walletAddress || !userId){
+  if (!walletAddress || !userId) {
     if (!walletAddress) {
       next(new RequestError(0, "Missing required field", 200));
       return;
@@ -181,7 +208,7 @@ router.post("/walletAddress",(req, res, next)=>{
   }
 
   UserModel.AddWalletAddress(userId, walletAddress)
-    .then(result=>{
+    .then(result => {
       res.status(200);
       return res.json({
         message: "Success Add Wallet address",
@@ -190,7 +217,7 @@ router.post("/walletAddress",(req, res, next)=>{
         data: result
       });
     })
-    .catch(msg=>{
+    .catch(msg => {
       next(new RequestError(0, msg, 200));
       return;
     });
