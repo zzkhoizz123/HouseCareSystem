@@ -74,6 +74,7 @@ router.put("/:workId", (req, res, next) => {
 
   if (!workId || !userId || !userRole){
     next(new RequestError(0, "Missing required fields", 200));
+    return;
   }
 
   WorkModel.ChooseWork(userId, userRole, workId)
