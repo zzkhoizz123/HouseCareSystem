@@ -129,6 +129,7 @@ const AddContractAddress = (workId, contractAddress)=>{
       {_id: new ObjectId(workId)},
       {$set: {contractAddress}}
     )
+    .select("-__v")
     .populate({
       path: "owner",
       select: "-password -__v -role",

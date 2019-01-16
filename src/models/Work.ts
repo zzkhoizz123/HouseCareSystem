@@ -35,7 +35,7 @@ class Work extends Typegoose {
   helper: Ref<User>;
 
   @prop()
-  contractAddess: string
+  contractAddress: string;
 }
 
 export { Work };
