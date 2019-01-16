@@ -74,6 +74,7 @@ router.put("/:workId", (req, res, next) => {
 
   if (!workId || !userId || !userRole){
     next(new RequestError(0, "Missing required fields", 200));
+    return;
   }
 
   WorkModel.ChooseWork(userId, userRole, workId)
@@ -154,7 +155,7 @@ router.get("/pending", (req, res, next) => {
 
 /**
  * POST: /contractAddress
- *     @param contractAddress:        string, Compulsory, "111111"
+ *     @param contractAddress:    string, Compulsory, "111111"
  */
 router.post("/contractAddress", (req, res, next)=>{
   const workId = req.body.workId;
@@ -162,6 +163,7 @@ router.post("/contractAddress", (req, res, next)=>{
 
   if (!workId || !contractAddress){
     next(new RequestError(0, "Missing required field", 200));
+    return;
   }
 
   WorkModel.AddContractAddress(workId, contractAddress)

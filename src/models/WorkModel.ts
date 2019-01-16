@@ -33,7 +33,8 @@ const CreateWork = (
           time: newtime,
           expectedSalary: newsalary,
           owner: user._id,
-          helper: null
+          helper: null,
+          contractAddress: null
         });
 
         WorkModel.create(work)
@@ -43,6 +44,7 @@ const CreateWork = (
             { $push: { workingList: newwork._id } }
           );
           WorkModel.findById(newwork._id)
+            .select("-__v")
             .populate({
               path: "owner",
               select: "-password -__v -role",
@@ -71,6 +73,7 @@ const ChooseWork = (userId, userRole, workId) => {
       { _id: new ObjectId(workId) },
       { $set: { helper: new ObjectId(userId) } }
     )
+      .select("-__v")
       .populate({
         path: "owner",
         select: "-password -__v -role",
@@ -93,6 +96,7 @@ const ChooseWork = (userId, userRole, workId) => {
 const GetWorkList = query => {
   return new Promise((resolve, reject) => {
     WorkModel.find(query)
+      .select("-__v")
       .populate({
         path: "owner",
         select: "-password -__v -role",
@@ -129,6 +133,7 @@ const AddContractAddress = (workId, contractAddress)=>{
       {_id: new ObjectId(workId)},
       {$set: {contractAddress}}
     )
+    .select("-__v")
     .populate({
       path: "owner",
       select: "-password -__v -role",

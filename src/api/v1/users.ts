@@ -104,6 +104,7 @@ router.post("/signup", (req, res, next) => {
     })
     .catch(msg => {
       next(new RequestError(0, msg, 200));
+      return;
     });
 });
 
