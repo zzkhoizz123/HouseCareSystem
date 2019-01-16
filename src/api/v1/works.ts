@@ -1,11 +1,12 @@
 import { Router } from "express";
 import * as bodyParser from "body-parser";
+import * as moment from "moment";
+
 import * as WorkModel from "models/WorkModel";
 import RequestError from "utils/RequestError";
 import ConvertDate from "utils/ConvertDate";
 
 import logger from "utils/logger";
-import { runInNewContext } from "vm";
 
 const router = Router();
 router.use(bodyParser.json());
@@ -13,7 +14,7 @@ router.use(bodyParser.json());
 /**
  * POST: /
  *     @param typeList:      array<string>, Compulsory, ["1", "2"]
- *     @param description:   string, Optional, "have responsibility" 
+ *     @param description:   string, Optional, "have responsibility"
  *     @param time:          string, Compulsory, "10/10/2019"
  *     @param timespan:      number, Compulsory, 10, day
  *     @param location:      string, Compulsory, "hi street"
@@ -28,12 +29,12 @@ router.post("/", (req, res, next) => {
   const salary = req.body.salary;
   const userId = req.user.id;
 
-  if (!typeList || !salary || !timespan || !time || !location){
-    next(new RequestError( 0, "Missing required fields" , 200));
+  if (!typeList || !salary || !timespan || !time || !location) {
+    next(new RequestError(0, "Missing required fields", 200));
     return;
   }
 
-  if (ConvertDate(time).getTime() < Date.now()){
+  if (moment(time).isSameOrBefore(moment())) {
     next(new RequestError(0, "Error time", 200));
     return;
   }
@@ -41,7 +42,7 @@ router.post("/", (req, res, next) => {
   WorkModel.CreateWork(
     userId,
     typeList,
-    ConvertDate(time),
+    moment(time).valueOf(),
     timespan,
     salary,
     location,
@@ -72,7 +73,7 @@ router.put("/:workId", (req, res, next) => {
   const userId = req.user.id;
   const userRole = req.user.role;
 
-  if (!workId || !userId || !userRole){
+  if (!workId || !userId || !userRole) {
     next(new RequestError(0, "Missing required fields", 200));
     return;
   }
@@ -102,7 +103,7 @@ router.get("/", (req, res, next) => {
   const userId = req.user.id;
   const userRole = req.user.role;
 
-  if(!userId || !userRole){
+  if (!userId || !userRole) {
     next(new RequestError(0, "Missing required fields", 200));
     return;
   }
@@ -130,7 +131,7 @@ router.get("/pending", (req, res, next) => {
   const userId = req.user.id;
   const userRole = req.user.role;
 
-  if(!userId || !userRole){
+  if (!userId || !userRole) {
     next(new RequestError(0, "Missing required fields", 200));
     return;
   }
@@ -155,19 +156,20 @@ router.get("/pending", (req, res, next) => {
 
 /**
  * POST: /contractAddress
+ *     @param workId              string, Compulsory
  *     @param contractAddress:    string, Compulsory, "111111"
  */
-router.post("/contractAddress", (req, res, next)=>{
+router.post("/contractAddress", (req, res, next) => {
   const workId = req.body.workId;
   const contractAddress = req.body.contractAddress;
 
-  if (!workId || !contractAddress){
+  if (!workId || !contractAddress) {
     next(new RequestError(0, "Missing required field", 200));
     return;
   }
 
   WorkModel.AddContractAddress(workId, contractAddress)
-    .then(result=>{
+    .then(result => {
       res.status(200);
       return res.json({
         message: "Success Add contract address",
@@ -176,7 +178,7 @@ router.post("/contractAddress", (req, res, next)=>{
         data: result
       });
     })
-    .catch(msg=>{
+    .catch(msg => {
       next(new RequestError(0, msg, 200));
       return;
     });
