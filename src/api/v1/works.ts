@@ -29,11 +29,7 @@ router.post("/", (req, res, next) => {
   const salary = req.body.salary;
   const userId = req.user.id;
 
-<<<<<<< HEAD
-  if (!typeList || !salary || !timespan || !time || !location){
-=======
   if (!typeList || !salary || !timespan || !time || !location) {
->>>>>>> be65fbf697d6522aeae6a3782b1f56f0278500e0
     next(new RequestError(0, "Missing required fields", 200));
     return;
   }

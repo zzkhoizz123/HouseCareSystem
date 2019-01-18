@@ -6,41 +6,83 @@ import RequestError from "utils/RequestError";
 import ConvertDate from "utils/ConvertDate";
 import logger from "utils/logger";
 
-import * as Contract from "contract/function";
+import * as contract from "contract/web3";
 
 const router = Router();
 
-<<<<<<< HEAD
-router.post("/check_user", (req, res, next) =>{
-  const userId = req.user.id;
-  UserModel.GetUserByID(userId)
-    .then(data => {
-      const check = Contract.CheckUser(data["walletAddress"]);
-      if(check){
-          res.status(200);
-          return res.json({
-          message: "check user",
-          success: true,
-          error: 0,
-          data: {"check" : true}
-        });
-      }
-      else{
-          res.status(200);
-          return res.json({
-          message: "check user",
-          success: true,
-          error: 0,
-          data: {"check" : false}
-        });
-      }
-    })
-    .catch(msg => {
-      next(new RequestError(0, msg, 200));
+router.post("/check_user", (req, res, next) => {
+  const userAddress = req.body.userAddress;
+
+  if (!userAddress){
+      next(new RequestError(0, "Empty address", 403));
       return;
-    });
-  
-=======
+  }
+
+  contract.CheckUser(userAddress)
+    .then(check=>{
+      res.status(200);
+      res.json({
+        message: "Check user",
+        success: true,
+        error: 0,
+        data:{check}
+      });
+    })
+    .catch(msg=>{
+      next(new RequestError(0, msg, 403));
+      return;
+    })
+});
+
+router.post("/add_user", (req, res, next) => {
+  const userAddress = req.body.userAddress;
+
+  if (!userAddress){
+      next(new RequestError(0, "Empty address", 403));
+      return;
+  }
+
+  contract.AddUser(userAddress)
+    .then(transaction=>{
+      res.status(200);
+      res.json({
+        message: "Add User",
+        success: true,
+        error: 0,
+        data:{transaction}
+      });
+    })
+    .catch(msg=>{
+      next(new RequestError(0, msg, 403));
+      return;
+    })
+});
+
+
+router.post("/user_count", (req, res, next) => {
+  const userAddress = req.body.userAddress;
+
+  if (!userAddress){
+      next(new RequestError(0, "Empty address", 403));
+      return;
+  }
+
+  contract.GetUserCount()
+    .then(count=>{
+      res.status(200);
+      res.json({
+        message: "Get User Count",
+        success: true,
+        error: 0,
+        data:{count}
+      });
+    })
+    .catch(msg=>{
+      next(new RequestError(0, msg, 403));
+      return;
+    })
+});
+
 router.get("/me", (req, res, next) => {
   UserModel.GetUserByID(req.user.id)
     .then(data => {
@@ -56,7 +98,6 @@ router.get("/me", (req, res, next) => {
       next(new RequestError(0, msg, 403));
       return;
     });
->>>>>>> be65fbf697d6522aeae6a3782b1f56f0278500e0
 });
 
 /**
