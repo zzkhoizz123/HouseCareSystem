@@ -6,6 +6,7 @@ import * as gracefulShutdown from "http-graceful-shutdown";
 
 import * as server_config from "config/server";
 import logger from "utils/logger";
+import RequestError from "utils/RequestError";
 
 import { router as api } from "api/api";
 
@@ -30,6 +31,7 @@ app.use("/api/", api);
 // error handling
 app.use((err, req, res, next) => {
   if (err.name === "UnauthorizedError") {
+    // jwt auth error
     res.status(401);
     res.json({
       message: "Invalid Token",
@@ -38,7 +40,8 @@ app.use((err, req, res, next) => {
       data: {}
     });
     res.end();
-  } else {
+  } else if (err instanceof RequestError) {
+    // request error
     res.status(err.status);
     res.json({
       message: err.message,
@@ -46,6 +49,18 @@ app.use((err, req, res, next) => {
       error: err.code,
       data: {}
     });
+    res.end();
+  } else {
+    // other error
+    logger.error(err);
+    res.status(500);
+    res.json({
+      message: err,
+      success: false,
+      error: -1,
+      data: {}
+    });
+    res.end();
   }
 });
 
