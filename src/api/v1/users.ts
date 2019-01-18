@@ -6,7 +6,40 @@ import RequestError from "utils/RequestError";
 import ConvertDate from "utils/ConvertDate";
 import logger from "utils/logger";
 
+import * as Contract from "contract/function";
+
 const router = Router();
+
+router.post("/check_user", (req, res, next) =>{
+  const userId = req.user.id;
+  UserModel.GetUserByID(userId)
+    .then(data => {
+      const check = Contract.CheckUser(data["walletAddress"]);
+      if(check){
+          res.status(200);
+          return res.json({
+          message: "check user",
+          success: true,
+          error: 0,
+          data: {"check" : true}
+        });
+      }
+      else{
+          res.status(200);
+          return res.json({
+          message: "check user",
+          success: true,
+          error: 0,
+          data: {"check" : false}
+        });
+      }
+    })
+    .catch(msg => {
+      next(new RequestError(0, msg, 200));
+      return;
+    });
+  
+});
 
 /**
  * POST: /signup
