@@ -19,7 +19,8 @@ gulp.task("start", done => {
     ext: "ts",
     exec: "ts-node -r tsconfig-paths/register",
     env: {
-      LOG_FILE: "./log/app.log"
+      LOG_FILE: "./log/app.log",
+      NODE_ENV: "DEV",
     },
     done: done
   });
@@ -34,6 +35,7 @@ gulp.task("prod", done => {
     env: {
       // setup for production build
       // load file?
+      NODE_ENV: "PROD",
       PORT: 8080,
       TOKEN_SECRET: "",
       MONGODB_HOST: "",

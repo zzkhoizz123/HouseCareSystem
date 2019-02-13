@@ -1,5 +1,7 @@
 import server from "server";
 import database from "database";
+import { UserModel, WorkModel } from "models/Models";
+import { sampleUsers, sampleWorks } from "./defaultDB";
 
 import logger from "utils/logger";
 
@@ -15,8 +17,21 @@ database()
   .then(db => {
     databaseInstance = db;
     logger.info("MongoDB Connected...");
-    return server();
+    return Promise.resolve();
   })
+  .then(async () => {
+    logger.info("Preparing database before start server");
+    if (process.env.NODE_ENV !== "DEV") {
+      logger.info("NODE_ENV != DEV --- SKIP");
+      return Promise.resolve();
+    }
+    await UserModel.deleteMany({});
+    await WorkModel.deleteMany({});
+    await UserModel.insertMany(sampleUsers);
+    await WorkModel.insertMany(sampleWorks);
+    return Promise.resolve();
+  })
+  .then(() => server())
   .catch(err => {
     logger.error("Cannot start server");
     logger.error(err);
@@ -47,5 +62,5 @@ const onShutdown = () => {
     });
 };
 
-process.on("SIGINT", onShutdown)
-process.on("SIGTERM", onShutdown)
+process.on("SIGINT", onShutdown);
+process.on("SIGTERM", onShutdown);

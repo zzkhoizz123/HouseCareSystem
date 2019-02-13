@@ -12,18 +12,19 @@ import { router as api } from "api/api";
 const app = express();
 
 app.use(cors());
-app.use(
-  jwt({ secret: server_config.TOKEN_SECRET }).unless({
-    path: ["/api/v1/users/signin", "/api/v1/users/signup", "/api/v1/users/"]
-  })
-);
-app.use(bodyParser.json());
 
 app.use("/**", (req, res, next) => {
   logger.info("[" + req.method + "] " + req.originalUrl);
   // logger.info(JSON.stringify(req.body));
   next();
 });
+
+app.use(
+  jwt({ secret: server_config.TOKEN_SECRET }).unless({
+    path: ["/api/v1/users/signin", "/api/v1/users/signup", "/api/v1/users/"]
+  })
+);
+app.use(bodyParser.json());
 
 app.use("/api/", api);
 
