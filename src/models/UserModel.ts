@@ -71,7 +71,6 @@ const VerifyUser = (username, password) => {
 };
 
 const GetUserByID = id => {
-  logger.info(id);
   return new Promise((resolve, reject) => {
     UserModel.findOne({ _id: new ObjectId(id) })
       .select("-password -__v")
@@ -126,6 +125,10 @@ const ComparePassword = (pass, hashpass) => {
 const ResetPassword = (name, curpwd, newpwd) => {
   return new Promise((resolve, reject) => {
     UserModel.findOne({ username: name }, (err, helper) => {
+      if(err){
+        return reject("Wrong username");
+      }
+      
       const rightPassword: boolean = bcrypt.compareSync(
         curpwd,
         helper.password
