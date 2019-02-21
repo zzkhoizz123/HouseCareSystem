@@ -3,6 +3,7 @@ import { ObjectId } from "bson";
 
 import logger from "utils/logger";
 import * as Model from "models/Models";
+import * as moment from "moment";
 
 const UserModel = Model.UserModel;
 const WorkModel = Model.WorkModel;
@@ -125,6 +126,31 @@ const GetWorkingListOfUser = (userId, userRole) => {
   return GetWorkList({ $and: [userQuery, { time: { $gt: Date.now() } }] });
 };
 
+const GetWorkingListToday = (userId, userRole) => {
+  let userQuery: object;
+  if (userRole === 0) {
+    userQuery = { helper: new ObjectId(userId) };
+  } else {
+    userQuery = { owner: new ObjectId(userId) };
+  }
+
+  const today =new Date(moment().format("YYYY-MM-DD"));
+  const tomorow = new Date(moment().add(1, "days").format("YYYY-MM-DD"));
+  
+  return GetWorkList({
+    $and: [
+      userQuery,
+      {
+        time: {$lte: tomorow}
+      },
+      {
+        time : {$gte: today}
+      }
+
+    ]
+  });
+};
+
 const AddContractAddress = (workId, contractAddress) => {
   return new Promise((resolve, reject) => {
     WorkModel.findOneAndUpdate(
@@ -157,5 +183,6 @@ export {
   GetWorkingListOfUser,
   ChooseWork,
   GetWorkList,
+  GetWorkingListToday,
   AddContractAddress
 };

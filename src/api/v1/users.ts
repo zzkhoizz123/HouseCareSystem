@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as UserModel from "models/UserModel";
 import * as jwt from "jsonwebtoken";
+import * as moment from "moment";
 
 import RequestError from "utils/RequestError";
 import ConvertDate from "utils/ConvertDate";
@@ -164,7 +165,7 @@ router.post("/signup", (req, res, next) => {
     role,
     sex,
     address,
-    DoB,
+    moment(DoB).valueOf(),
     experience,
     walletAddress
   )

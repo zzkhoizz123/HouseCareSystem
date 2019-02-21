@@ -34,7 +34,7 @@ router.post("/", (req, res, next) => {
     return;
   }
 
-  if (moment(time).isSameOrBefore(moment())) {
+  if (moment(time).isSameOrBefore(moment().add(1, "days"))) {
     next(new RequestError(0, "Error time", 200));
     return;
   }
@@ -62,6 +62,32 @@ router.post("/", (req, res, next) => {
       return;
     });
 });
+
+router.get("/today", (req, res, next) => {
+  const userId = req.user.id;
+  const userRole = req.user.role;
+
+  if (!userId || !userRole) {
+    next(new RequestError(0, "Missing required fields", 200));
+    return;
+  }
+
+  WorkModel.GetWorkingListToday(userId, userRole)
+    .then(data => {
+      res.status(200);
+      return res.json({
+        message: "Get Works today success",
+        success: true,
+        error: 0,
+        data
+      });
+    })
+    .catch(msg => {
+      next(new RequestError(0, msg, 200));
+      return;
+    });
+});
+
 
 /**
  * PUT: /:workId
