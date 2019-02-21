@@ -2,6 +2,7 @@ import { Document } from "mongoose";
 import { prop, Typegoose, ModelType, InstanceType, Ref } from "typegoose";
 
 import { Work } from "models/Work";
+import { Double } from "bson";
 
 class User extends Typegoose {
   @prop()
@@ -29,6 +30,12 @@ class User extends Typegoose {
   role: number;
 
   @prop()
+  DoB: Date;
+
+  @prop()
+  experience: number;
+
+  @prop()
   character: object;
 
   @prop()
@@ -37,8 +44,14 @@ class User extends Typegoose {
   @prop()
   property: object;
 
+  @prop()
+  address: string;
+
   @prop({ ref: Work })
   workingList: Array<Ref<Work>>;
+
+  @prop()
+  walletAddress: string
 }
 
 export { User };

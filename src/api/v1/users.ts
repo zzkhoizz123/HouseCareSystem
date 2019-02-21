@@ -1,25 +1,152 @@
 import { Router } from "express";
 import * as UserModel from "models/UserModel";
 import * as jwt from "jsonwebtoken";
+import * as moment from "moment";
 
 import RequestError from "utils/RequestError";
+import ConvertDate from "utils/ConvertDate";
 import logger from "utils/logger";
+
+import * as contract from "contract/web3";
 
 const router = Router();
 
+router.post("/check_user", (req, res, next) => {
+  const userAddress = req.body.userAddress;
+
+  if (!userAddress){
+      next(new RequestError(0, "Empty address", 403));
+      return;
+  }
+
+  contract.CheckUser(userAddress)
+    .then(check=>{
+      res.status(200);
+      res.json({
+        message: "Check user",
+        success: true,
+        error: 0,
+        data:{check}
+      });
+    })
+    .catch(msg=>{
+      next(new RequestError(0, msg, 403));
+      return;
+    })
+});
+
+router.post("/add_user", (req, res, next) => {
+  const userAddress = req.body.userAddress;
+
+  if (!userAddress){
+      next(new RequestError(0, "Empty address", 403));
+      return;
+  }
+
+  contract.AddUser(userAddress)
+    .then(transaction=>{
+      res.status(200);
+      res.json({
+        message: "Add User",
+        success: true,
+        error: 0,
+        data:{transaction}
+      });
+    })
+    .catch(msg=>{
+      next(new RequestError(0, msg, 403));
+      return;
+    })
+});
+
+
+router.post("/user_count", (req, res, next) => {
+  const userAddress = req.body.userAddress;
+
+  if (!userAddress){
+      next(new RequestError(0, "Empty address", 403));
+      return;
+  }
+
+  contract.GetUserCount()
+    .then(count=>{
+      res.status(200);
+      res.json({
+        message: "Get User Count",
+        success: true,
+        error: 0,
+        data:{count}
+      });
+    })
+    .catch(msg=>{
+      next(new RequestError(0, msg, 403));
+      return;
+    })
+});
+
+router.get("/me", (req, res, next) => {
+  UserModel.GetUserByID(req.user.id)
+    .then(data => {
+      res.status(200);
+      res.json({
+        message: "User with Id: " + req.user.id + " info",
+        success: true,
+        error: 0,
+        data
+      });
+    })
+    .catch(msg => {
+      next(new RequestError(0, msg, 403));
+      return;
+    });
+});
+
 /**
  * POST: /signup
- *     @param name: UserModel Register Name
- *     @param email: UserModel Register Email
- *     @param username: UserModelname on System
- *     @param password: UserModel's password
+ *     @param name:          string, Compulsory, "user"
+ *     @param email:         string, Compulsory, "user@gmail.com"
+ *     @param username:      string, Compulsory, "user"
+ *     @param password:      string, Compulsory, "123"
+ *     @param sex:           string, optional, "male"
+ *     @param DoB:           string, optional, "10/10/2000"
+ *     @param experience:    number, optional, 1, year
+ *     @param address:       string, optional, "thu duc"
+ *     @param walletAddress: string, optional, "11111"
+ *     @param role:          number, optional, 1
  */
 router.post("/signup", (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
+  let sex = req.body.sex;
+  let DoB = req.body.DoB;
+  let experience = req.body.experience;
+  let address = req.body.address;
+  let walletAddress = req.body.walletAddress;
   let role = req.body.role;
+
+  if (!walletAddress) {
+    walletAddress = null;
+  }
+
+  if (!sex) {
+    sex = null;
+  }
+
+  if (!DoB) {
+    DoB = null;
+  } else {
+    DoB = ConvertDate(DoB);
+  }
+
+  if (!experience) {
+    experience = null;
+  }
+
+  if (!address) {
+    address = null;
+  }
 
   if (!name || !email || !username || !password) {
     next(new RequestError(0, "Missing required field", 200));
@@ -27,27 +154,49 @@ router.post("/signup", (req, res, next) => {
   }
 
   if (role == null) {
-    role = 1;
+    role = 1; // owner
   }
 
-  UserModel.CreateNewUser(username, password, name, email, role)
-    .then(msg => {
+  UserModel.CreateNewUser(
+    username,
+    password,
+    name,
+    email,
+    role,
+    sex,
+    address,
+    moment(DoB).valueOf(),
+    experience,
+    walletAddress
+  )
+    .then(data => {
       res.status(200);
       res.json({
-        message: msg,
+        message: "Signup Success",
         success: true,
         error: 0,
-        data: {}
+        data
       });
     })
     .catch(msg => {
-      next(new RequestError(0, "Cannot create user", 200));
+      next(new RequestError(0, msg, 200));
+      return;
     });
 });
 
-router.post("/signin", (req, res) => {
+/**
+ * POST: /signin
+ *     @param username:      string, Compulsory, "user"
+ *     @param password:      string, Compulsory, "123"
+ */
+router.post("/signin", (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
+
+  if (!username || !password) {
+    next(new RequestError(0, "Missing reuired fields", 200));
+    return;
+  }
 
   UserModel.VerifyUser(username, password)
     .then(user => {
@@ -62,17 +211,15 @@ router.post("/signin", (req, res) => {
       });
     })
     .catch(msg => {
-      res.status(200);
-      res.json({
-        message: msg,
-        success: false,
-        error: 0,
-        data: {}
-      });
+      next(new RequestError(0, msg, 200));
+      return;
     });
 });
 
-router.get("/:id", (req, res) => {
+/**
+ * GET: /:id
+ */
+router.get("/:id", (req, res, next) => {
   const id = req.params.id;
   UserModel.GetUserByID(id)
     .then(data => {
@@ -85,29 +232,24 @@ router.get("/:id", (req, res) => {
       });
     })
     .catch(msg => {
-      res.status(200);
-      res.json({
-        message: msg,
-        success: false,
-        error: 0,
-        data: {}
-      });
+      next(new RequestError(0, msg, 200));
+      return;
     });
 });
 
-router.post("/reset_password", (req, res) => {
+/**
+ * POST: /reset_password
+ *     @param username:      string, Compulsory, "user"
+ *     @param password:      string, Compulsory, "123"
+ *     @param newpass:       string, Compulsory, "123"
+ */
+router.post("/reset_password", (req, res, next) => {
   const name = req.body.username;
   const pass = req.body.password;
   const newpass = req.body.new_password;
 
   if (!name || !pass || !newpass) {
-    res.json({
-      message: "no username or password or newPassword",
-      success: false,
-      error: 1,
-      data: {}
-    });
-    res.end();
+    next(new RequestError(0, "Missing required fields", 200));
     return;
   }
 
@@ -122,13 +264,39 @@ router.post("/reset_password", (req, res) => {
       });
     })
     .catch(msg => {
+      next(new RequestError(0, msg, 200));
+      return;
+    });
+});
+
+/**
+ * POST: /walletAddress
+ *     @param walletAddress:    string, Compulsory, "11111"
+ */
+router.post("/walletAddress", (req, res, next) => {
+  const walletAddress = req.body.walletAddress;
+  const userId = req.user.id;
+
+  if (!walletAddress || !userId) {
+    if (!walletAddress) {
+      next(new RequestError(0, "Missing required field", 200));
+      return;
+    }
+  }
+
+  UserModel.AddWalletAddress(userId, walletAddress)
+    .then(result => {
       res.status(200);
       return res.json({
-        message: msg,
-        success: false,
+        message: "Success Add Wallet address",
+        success: true,
         error: 0,
-        data: {}
+        data: result
       });
+    })
+    .catch(msg => {
+      next(new RequestError(0, msg, 200));
+      return;
     });
 });
 

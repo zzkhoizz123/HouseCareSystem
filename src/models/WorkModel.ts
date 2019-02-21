@@ -3,6 +3,7 @@ import { ObjectId } from "bson";
 
 import logger from "utils/logger";
 import * as Model from "models/Models";
+import * as moment from "moment";
 
 const UserModel = Model.UserModel;
 const WorkModel = Model.WorkModel;
@@ -33,14 +34,17 @@ const CreateWork = (
           time: newtime,
           expectedSalary: newsalary,
           owner: user._id,
-          helper: null
+          helper: null,
+          contractAddress: null
         });
+
         WorkModel.create(work).then(newwork => {
           UserModel.update(
             { _id: user._id },
             { $push: { workingList: newwork._id } }
           );
           WorkModel.findById(newwork._id)
+            .select("-__v")
             .populate({
               path: "owner",
               select: "-password -__v -role",
@@ -69,6 +73,7 @@ const ChooseWork = (userId, userRole, workId) => {
       { _id: new ObjectId(workId) },
       { $set: { helper: new ObjectId(userId) } }
     )
+      .select("-__v")
       .populate({
         path: "owner",
         select: "-password -__v -role",
@@ -91,6 +96,7 @@ const ChooseWork = (userId, userRole, workId) => {
 const GetWorkList = query => {
   return new Promise((resolve, reject) => {
     WorkModel.find(query)
+      .select("-__v")
       .populate({
         path: "owner",
         select: "-password -__v -role",
@@ -120,4 +126,63 @@ const GetWorkingListOfUser = (userId, userRole) => {
   return GetWorkList({ $and: [userQuery, { time: { $gt: Date.now() } }] });
 };
 
-export { CreateWork, GetWorkingListOfUser, ChooseWork, GetWorkList };
+const GetWorkingListToday = (userId, userRole) => {
+  let userQuery: object;
+  if (userRole === 0) {
+    userQuery = { helper: new ObjectId(userId) };
+  } else {
+    userQuery = { owner: new ObjectId(userId) };
+  }
+
+  const today =new Date(moment().format("YYYY-MM-DD"));
+  const tomorow = new Date(moment().add(1, "days").format("YYYY-MM-DD"));
+  
+  return GetWorkList({
+    $and: [
+      userQuery,
+      {
+        time: {$lte: tomorow}
+      },
+      {
+        time : {$gte: today}
+      }
+
+    ]
+  });
+};
+
+const AddContractAddress = (workId, contractAddress) => {
+  return new Promise((resolve, reject) => {
+    WorkModel.findOneAndUpdate(
+      { _id: new ObjectId(workId) },
+      { $set: { contractAddress } },
+      { new: true } // returns new data for front-end to update
+    )
+      .select("-__v")
+      .populate({
+        path: "owner",
+        select: "-password -__v -role",
+        model: "User"
+      })
+      .populate({
+        path: "helper",
+        select: "-password -__v -role",
+        model: "User"
+      })
+      .exec((err, work) => {
+        if (err) {
+          return reject("Error occur");
+        }
+        return resolve(work);
+      });
+  });
+};
+
+export {
+  CreateWork,
+  GetWorkingListOfUser,
+  ChooseWork,
+  GetWorkList,
+  GetWorkingListToday,
+  AddContractAddress
+};

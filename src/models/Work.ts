@@ -33,6 +33,9 @@ class Work extends Typegoose {
 
   @prop({ ref: User, required: false })
   helper: Ref<User>;
+
+  @prop()
+  contractAddress: string;
 }
 
 export { Work };

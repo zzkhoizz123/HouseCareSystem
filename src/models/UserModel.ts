@@ -9,7 +9,7 @@ import * as Model from "models/Models";
 const salt = "5802ae89"; // md5('ohmygod')[:8]
 const UserModel = Model.UserModel;
 
-const CreateNewUser = (username, password, name, email, role) => {
+const CreateNewUser = (username, password, name, email, role, sex, address, DoB, experience, walletAddress) => {
   return new Promise((resolve, reject) => {
     UserModel.findOne(
       {
@@ -25,10 +25,24 @@ const CreateNewUser = (username, password, name, email, role) => {
           password,
           name,
           email,
-          role
+          role, 
+          sex,
+          address,
+          DoB,
+          experience,
+          walletAddress
         });
-        user.save();
-        return resolve("Signup Success");
+        UserModel.create(user)
+          .then(user2=>{
+            UserModel.findById(user2._id)
+              .select("-password -__v")
+              .exec((err2, res) => {
+                if (err2) {
+                  return reject("Error occur");
+                }
+                return resolve(res);
+              });
+          })
       }
     );
   });
@@ -57,7 +71,6 @@ const VerifyUser = (username, password) => {
 };
 
 const GetUserByID = id => {
-  logger.info(id);
   return new Promise((resolve, reject) => {
     UserModel.findOne({ _id: new ObjectId(id) })
       .select("-password -__v")
@@ -112,6 +125,10 @@ const ComparePassword = (pass, hashpass) => {
 const ResetPassword = (name, curpwd, newpwd) => {
   return new Promise((resolve, reject) => {
     UserModel.findOne({ username: name }, (err, helper) => {
+      if(err){
+        return reject("Wrong username");
+      }
+      
       const rightPassword: boolean = bcrypt.compareSync(
         curpwd,
         helper.password
@@ -137,10 +154,27 @@ const ResetPassword = (name, curpwd, newpwd) => {
   });
 };
 
+const AddWalletAddress = (userId, walletAddress) =>{
+  return new Promise((resolve, reject) => {
+    UserModel.findOneAndUpdate(
+      {_id: new ObjectId(userId)},
+      {$set: {walletAddress}}
+    )
+    .select("-password -__v")
+    .exec((err, user) => {
+      if (err) {
+        return reject("Error occur");
+      }
+      return resolve(user);
+    });
+  });
+}
+
 export {
   CreateNewUser,
   VerifyUser,
   ResetPassword,
   GetUserByID,
-  GetUserByUsername
+  GetUserByUsername,
+  AddWalletAddress
 };
